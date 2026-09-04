@@ -3,7 +3,7 @@
 const WIDTH = 1600;
 const HEIGHT = 900;
 const LINES = 26;
-const STEP = 40; // sample spacing along x
+const STEP = 40; 
 
 type Point = { x: number; y: number };
 
@@ -24,7 +24,6 @@ function samples(i: number): Point[] {
   return pts;
 }
 
-/** Midpoint-quadratic smoothing — turns the samples into one continuous curve. */
 function toPath(pts: Point[]): string {
   let d = `M ${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
 

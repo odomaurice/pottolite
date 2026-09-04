@@ -5,15 +5,22 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Menu01Icon, Cancel01Icon, ArrowRight01Icon, PlayIcon } from "@hugeicons/core-free-icons";
+import {
+  Menu01Icon,
+  Cancel01Icon,
+  ArrowRight01Icon,
+  PlayIcon,
+} from "@hugeicons/core-free-icons";
 
 const navItems = [
   { label: "Features", href: "#features" },
   { label: "Solutions", href: "#solutions" },
   { label: "Potto Suite", href: "#suite" },
+  { label: "Plans", href: "#plans" },
+  { label: "Hardware", href: "#hardware" },
   { label: "Testimonials", href: "#testimonials" },
+  { label: "FAQ", href: "#faq" },
 ];
-
 
 const PROBE_Y = 48;
 const DEFAULT_NAV = { tone: "light" as const, bg: "var(--canvas)" };
@@ -31,7 +38,8 @@ export default function HomeHeader() {
 
     const compute = () => {
       ticking = false;
-      const sections = document.querySelectorAll<HTMLElement>("[data-nav-tone]");
+      const sections =
+        document.querySelectorAll<HTMLElement>("[data-nav-tone]");
       let next = DEFAULT_NAV as { tone: "light" | "dark"; bg: string };
 
       sections.forEach((section) => {
@@ -72,7 +80,6 @@ export default function HomeHeader() {
       >
         <div className="flex h-18 w-full items-center justify-between px-5 md:px-8 lg:px-12">
           <Link href="/" className="flex items-center">
-            
             <Image
               src="/potto_logo.svg"
               alt="Potto"
@@ -107,7 +114,11 @@ export default function HomeHeader() {
               className="hidden animate-glow items-center gap-1.5 rounded-full bg-brand-teal px-5 py-3 text-sm font-semibold text-white [--glow:var(--color-brand-teal)] transition duration-300 hover:bg-brand-yellow-light hover:[--glow:var(--color-brand-yellow-light)] sm:inline-flex lg:px-8 lg:py-4 lg:text-base"
             >
               Get started
-              <HugeiconsIcon icon={ArrowRight01Icon} size={16} strokeWidth={2} />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                size={16}
+                strokeWidth={2}
+              />
             </Link>
             <Link
               href="#intro-video"
@@ -129,7 +140,11 @@ export default function HomeHeader() {
                   : "border-line bg-surface text-ink hover:bg-surface-2"
               }`}
             >
-              <HugeiconsIcon icon={open ? Cancel01Icon : Menu01Icon} size={19} strokeWidth={1.8} />
+              <HugeiconsIcon
+                icon={open ? Cancel01Icon : Menu01Icon}
+                size={19}
+                strokeWidth={1.8}
+              />
             </button>
           </div>
         </div>

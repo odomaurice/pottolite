@@ -11,38 +11,38 @@ import {
   Message01Icon,
   UserCheck01Icon,
 } from "@hugeicons/core-free-icons";
-
+import SectionCaption from "@/components/SectionCaption";
 
 const SOLUTIONS = [
   {
     icon: Bus01Icon,
     title: "Mobility Management",
-    body: "Provide parents with real-time information on school bus activities, student arrivals, and dismissal processes, geared towards student safety through SMS and push notifications.",
+    body: "Real-time bus activity, arrivals and dismissal, sent to parents by SMS and push notification.",
   },
   {
     icon: UserCheck01Icon,
     title: "Guardian and Visitor Validation",
-    body: "Authenticates the identities of guardians responsible for dropping off and picking up a child, and enhances appointment scheduling for proper visitor management.",
+    body: "Verifies who is dropping off and collecting each child, and schedules every visitor properly.",
   },
   {
     icon: AmbulanceIcon,
     title: "Emergency Management",
-    body: "Instantly alerts various emergency responders such as parents, the police, fire department, and healthcare facilities, in the event of a school emergency.",
+    body: "One alert reaches parents, police, fire and medical responders the moment an emergency is raised.",
   },
   {
     icon: AlarmClockIcon,
     title: "Truancy Control",
-    body: "Monitors the attendance of students and staff according to their timetables, keeping a record of their presence or absence in each subject/class, and assessing their overall punctuality to school.",
+    body: "Tracks student and staff attendance against the timetable, class by class, and builds a punctuality record.",
   },
   {
     icon: IdentityCardIcon,
     title: "Smart ID Cards",
-    body: "Create Radio Frequency Identification (RFID) cards and Quick Response (QR) codes instantly for every enrolled student and staff.",
+    body: "Issue RFID cards and QR codes instantly for every enrolled student and staff member.",
   },
   {
     icon: Message01Icon,
     title: "Communication Management",
-    body: "Offers a hybrid system of communication that allows schools to utilize a blend of bulk and individual short message service (SMS), push notifications, and in-app messaging to ensure effective communication with all stakeholders.",
+    body: "Bulk and individual SMS, push notifications and in-app messaging, all from one place.",
   },
 ];
 
@@ -75,12 +75,9 @@ export default function SolutionsSection() {
 
       <div ref={ref} className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <motion.span
-            {...reveal(0)}
-            className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60"
-          >
+          <SectionCaption tone="dark" {...reveal(0)}>
             Potto Solutions
-          </motion.span>
+          </SectionCaption>
 
           <motion.h2
             {...reveal(0.12)}

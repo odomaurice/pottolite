@@ -10,6 +10,7 @@ import {
   QuoteUpIcon,
   StarIcon,
 } from "@hugeicons/core-free-icons";
+import SectionCaption from "@/components/SectionCaption";
 
 
 const TESTIMONIALS = [
@@ -95,12 +96,7 @@ export default function TestimonialsSection() {
     >
       <div ref={ref} className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <motion.div {...reveal(0)}>
-            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-soft">
-              Testimonials
-            </span>
-            <span aria-hidden className="mx-auto mt-3 block h-0.5 w-10 bg-brand" />
-          </motion.div>
+          <SectionCaption {...reveal(0)}>Testimonials</SectionCaption>
 
           <motion.h2
             {...reveal(0.12)}
@@ -156,7 +152,7 @@ export default function TestimonialsSection() {
                 exit="exit"
                 transition={{ duration: 0.45, ease }}
               >
-                <blockquote className="font-header text-2xl font-semibold leading-normal tracking-tight text-ink sm:text-3xl sm:leading-[1.45]">
+                <blockquote className="font-header text-xl font-semibold leading-normal tracking-tight text-ink sm:text-2xl sm:leading-[1.45]">
                   “{current.quote}”
                 </blockquote>
 

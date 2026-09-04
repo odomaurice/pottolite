@@ -4,12 +4,6 @@
 
 
 @theme {
-  /* Continuous button glow. The colour is read from a `--glow` custom property
-     set per element, so one animation serves the teal and yellow CTAs alike —
-     and hover can recolour the glow by reassigning `--glow` instead of fighting
-     the animation with a `hover:shadow-*` utility (a running animation wins over
-     ordinary declarations, so those are simply ignored).
-     Usage: `animate-glow [--glow:var(--color-brand-teal)]`. */
   --animate-glow: glow 2.8s ease-in-out infinite;
 
   @keyframes glow {
@@ -26,9 +20,6 @@
     }
   }
 
-  /* Slow breathing halo — used behind the play control so it glows on its own
-     rather than only answering a hover. Softer than `animate-ping`, which
-     snaps to scale(2) and reads as a radar blip. */
   --animate-halo: halo 3s ease-in-out infinite;
 
   @keyframes halo {
@@ -42,13 +33,6 @@
       transform: scale(1.18);
     }
   }
-
-  /* Expanding ring for the play control. It starts flush with the button and
-     is hidden behind it, so what you see is a ring popping out of the edge and
-     dissolving — the "press me" pulse, without the hard snap of `animate-ping`
-     (which jumps straight to scale(2) and reads as a radar blip). Two of these
-     offset in time keep it continuous. Colour comes from the element's own
-     `--glow`, same convention as the button glow above. */
   --animate-pulse-ring: pulse-ring 2.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 
   @keyframes pulse-ring {
@@ -193,15 +177,9 @@
   --sidebar-accent-foreground: oklch(0.2686 0.0541 82.31);
   --sidebar-border: oklch(0.9 0.006 264.36);
   --sidebar-ring: oklch(0.6002 0.1038 184.7);
-  /* Watermark linework — deliberately at the threshold of visibility: present
-     as texture, never legible as content. Pure neutral, so chroma and hue are 0;
-     lightness is the only dial. Raise it toward 100% to fade further, lower it
-     to strengthen. (#E2E2E2 would be 91%.) */
   --water-mark: oklch(97% 0 0); /* ≈ #F5F5F5 */
 }
 
-/* Outside @layer deliberately, so it outranks the utilities it is overriding.
-   Reduced motion keeps the glow — it just stops it breathing. */
 @media (prefers-reduced-motion: reduce) {
   .animate-glow {
     animation: none;
@@ -210,8 +188,6 @@
   .animate-halo {
     animation: none;
   }
-  /* The ring only exists as movement, so with motion off it is nothing at all
-     rather than a stalled disc sitting under the button. */
   .animate-pulse-ring {
     animation: none;
     opacity: 0;
@@ -228,8 +204,36 @@
   html {
     @apply font-sans;
   }
-  /* Keeps the fixed header from covering a section when jumped to via anchor. */
   [id] {
     scroll-margin-top: 6rem;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--surface-2);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--brand);
+    border: 2px solid var(--surface-2);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand-teal);
+  }
+  ::-webkit-scrollbar-corner {
+    background: var(--surface-2);
+  }
+
+  @supports not selector(::-webkit-scrollbar) {
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: var(--brand) var(--surface-2);
+    }
   }
 }

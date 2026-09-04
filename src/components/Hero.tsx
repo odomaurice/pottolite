@@ -1,17 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { AnimatePresence, motion } from "framer-motion";
-import { HugeiconsIcon } from "@hugeicons/react";
+
 
 
 const VIDEO_SRC = "/videos/intro.mp4";
-
-// Re-exported from slides/slide5.jpg, which was a 5600x3959 8.2MB JPEG. A
-// poster is fetched eagerly, so that was the single heaviest thing on the page
-// and it landed on phones first.
 const POSTER = "/hero-poster.webp";
 
 const ROTATE_MS = 6000;
@@ -103,53 +98,14 @@ export default function Hero() {
     show: { yPercent: 0, transition: { duration: 0.75, ease: [0.22, 1, 0.36, 1] } },
     out: { yPercent: -115, transition: { duration: 0.4, ease: [0.55, 0, 1, 0.45] } },
   } as const;
-  const fade = {
-    hidden: { opacity: 0, y: 14 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: "easeOut" } },
-    out: { opacity: 0, y: -10, transition: { duration: 0.3 } },
-  } as const;
 
   return (
     <section
       ref={root}
       data-nav-tone="dark"
-      /* Portrait height is the one number to turn here, and it is a direct
-         trade against how much of the clip's width survives — the section is
-         filled by covering, so every pixel of height beyond the clip's own
-         shape scales the picture up and pushes its sides off screen. At the
-         clip's exact shape (478/848 = 56.4vw) nothing is lost at all; past
-         that it goes quickly, and the clip carries its own titles:
-
-             56.4vw  232px   100% of the width kept   nothing lost
-             60vw    247px    94%                     3% off each side
-             64vw    264px    88%                     6%
-             68vw    280px    83%                     9%   <- here
-             80vw    330px    70%                    15%
-            100vw    412px    56%                    22%
-
-         (Measured on a 412px-wide phone; the ratios hold at any width.)
-
-         68vw trades roughly 9% off each side for 20% more height. Most promo
-         edits keep their titles inside a safe margin of about that, so this is
-         near the edge of what is free — if the titles start clipping, step
-         back to 64vw or 60vw.
-
-         Keyed to orientation rather than width: what forces the trade is the
-         container being taller than it is wide, and a portrait 768x1024 tablet
-         is every bit as tall-and-narrow as a phone, which a `sm:` breakpoint
-         sails straight past. Landscape keeps the full viewport height, where
-         the clip's 1.774:1 is near enough to the screen to cover it outright. */
       className="relative isolate flex min-h-[68vw] items-center justify-center overflow-hidden text-white landscape:min-h-svh"
     >
       <div aria-hidden className="absolute inset-0 -z-10 bg-ink">
-        {/* Edge to edge at every size — no contained band, no blurred backing,
-            nothing that draws a box across the hero.
-
-            Cover at every size. In portrait the section is already the clip's
-            exact shape, so there is nothing left for it to crop — cover is
-            used rather than contain purely so that any sub-pixel rounding
-            spills over the edge instead of leaving a hairline of background
-            along one side. */}
         <video
           ref={videoRef}
           autoPlay
@@ -163,15 +119,8 @@ export default function Hero() {
         />
 
         <div className="absolute inset-x-0 top-0 z-20 h-40 bg-linear-to-b from-ink/60 to-transparent" />
-        {/* Shallow in portrait: at the full height it washed the bottom of the
-            picture out to white, since the frame now ends much closer to the
-            section's edge. Landscape is unchanged. */}
         <div className="absolute inset-x-0 bottom-0 z-20 h-14 bg-linear-to-b from-transparent via-canvas/60 to-canvas landscape:h-32 lg:landscape:h-36" />
       </div>
-      {/* Vertical padding only in landscape. In portrait the section's height
-          is the clip's shape and nothing else may push against it — 272px of
-          padding here would have forced the section taller than the picture
-          and put the cropping straight back. */}
       <div className="relative z-10 mx-auto w-full max-w-4xl px-5 text-center md:px-6 lg:px-8 landscape:pt-32 landscape:pb-36 lg:landscape:pb-40">
         <AnimatePresence mode="wait">
           <motion.div key={index} variants={copy} initial="hidden" animate="show" exit="out">

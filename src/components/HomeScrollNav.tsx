@@ -1,9 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
 
-// Each id must match an anchor rendered on the homepage.
+// Each id must match an anchor rendered on the homepage, AND this list must
+// stay in the same order the sections appear in page.tsx. The active dot is the
+// last entry whose top has passed the probe, walked in list order — so an entry
+// out of sequence highlights the wrong dot and sends clicks to the wrong place.
+// It had drifted once already (hardware and plans had both moved in page.tsx).
 type Section = { id: string | null; label: string };
 
 const SECTIONS: Section[] = [
@@ -11,9 +14,12 @@ const SECTIONS: Section[] = [
   { id: "intro-video", label: "Potto in action" },
   { id: "features", label: "Features" },
   { id: "problem", label: "The problem" },
+  { id: "hardware", label: "Hardware" },
   { id: "suite", label: "Potto Suite" },
   { id: "solutions", label: "Solutions" },
+  { id: "plans", label: "Plans" },
   { id: "testimonials", label: "Testimonials" },
+  { id: "faq", label: "FAQ" },
 ];
 
 const LAST = SECTIONS.length - 1;
@@ -25,7 +31,9 @@ export default function HomeScrollNav() {
   const topOf = (s: Section) => {
     if (!s.id) return 0;
     const el = document.getElementById(s.id);
-    return el ? el.getBoundingClientRect().top + window.scrollY : Number.POSITIVE_INFINITY;
+    return el
+      ? el.getBoundingClientRect().top + window.scrollY
+      : Number.POSITIVE_INFINITY;
   };
 
   useEffect(() => {
@@ -33,14 +41,17 @@ export default function HomeScrollNav() {
 
     const compute = () => {
       ticking = false;
-     
+
       const probe = window.scrollY + window.innerHeight * 0.3;
       let idx = 0;
       for (let i = 0; i < SECTIONS.length; i += 1) {
         if (probe >= topOf(SECTIONS[i])) idx = i;
       }
-      
-      if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 4) {
+
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.scrollHeight - 4
+      ) {
         idx = LAST;
       }
       setActive(idx);
@@ -67,7 +78,7 @@ export default function HomeScrollNav() {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-   
+
     document.getElementById(target.id)?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
@@ -92,7 +103,9 @@ export default function HomeScrollNav() {
                 >
                   <span
                     className={`block rounded-full transition-all duration-300 ${
-                      isActive ? "h-6 w-1.5 bg-brand" : "h-1.5 w-1.5 bg-line group-hover:bg-soft"
+                      isActive
+                        ? "h-6 w-1.5 bg-brand"
+                        : "h-1.5 w-1.5 bg-line group-hover:bg-soft"
                     }`}
                   />
                   {/* Label on hover */}
@@ -106,27 +119,6 @@ export default function HomeScrollNav() {
         </ul>
       </nav>
 
-      {/* Right — scroll up / down */}
-      {/* <div className="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col gap-2 lg:flex">
-        <button
-          type="button"
-          onClick={() => goTo(active - 1)}
-          disabled={active === 0}
-          aria-label="Scroll to previous section"
-          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ChevronUp className="h-5 w-5" />
-        </button>
-        <button
-          type="button"
-          onClick={() => goTo(active + 1)}
-          disabled={active === LAST}
-          aria-label="Scroll to next section"
-          className="grid h-10 w-10 cursor-pointer place-items-center rounded-full border border-line bg-surface text-ink shadow-sm transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ChevronDown className="h-5 w-5" />
-        </button>
-      </div> */}
     </>
   );
 }

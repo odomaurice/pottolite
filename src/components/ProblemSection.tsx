@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
+import VideoLightbox from "./VideoLightbox";
 import {
   Alert02Icon,
+  PlayIcon,
   BedSingle01Icon,
   CalendarRemove01Icon,
   NotificationOff01Icon,
@@ -13,7 +15,27 @@ import {
   UserRemove01Icon,
   WorkoutRunIcon,
 } from "@hugeicons/core-free-icons";
+import SectionCaption from "@/components/SectionCaption";
 
+/**
+ * Each portrait is the poster for its own clip.
+ *
+ * ── PLACEHOLDER SOURCES ──────────────────────────────────────────────────
+ * Both currently point at the intro film, because that is the only video in
+ * /public/videos. The wiring is per-image, so dropping the two real files in
+ * and changing these two strings is the whole job — nothing else moves.
+ * ─────────────────────────────────────────────────────────────────────────
+ */
+const CLIPS = {
+  parent: {
+    src: "/videos/intro.mp4",
+    label: "A parent on what worries them about the school run",
+  },
+  student: {
+    src: "/videos/intro.mp4",
+    label: "A boarding student on life in the hostel",
+  },
+};
 
 const PROBLEM_IMAGE = "/problem-parent.webp";
 const STUDENT_IMAGE = "/problem-student.webp";
@@ -27,12 +49,12 @@ const PROBLEMS = [
   {
     icon: CalendarRemove01Icon,
     title: "Student Truancy",
-    body: "A student's likelihood of passing a standard exam drops to 35% if he/she misses between 19 to 38 days of school within a year.",
+    body: "Miss 19 to 38 days in a year and a student's chance of passing a standard exam drops to 35%.",
   },
   {
     icon: WorkoutRunIcon,
     title: "Exhausting Dismissals",
-    body: "About 65 minutes or more is expended during students' pickup and it is characterized by stress, anxiety, and a state of chaos which could make the children vulnerable.",
+    body: "Pickup runs 65 minutes or more, in stress and chaos. Exactly the conditions that leave children vulnerable.",
   },
 ];
 
@@ -40,26 +62,50 @@ const BOARDING_PROBLEMS = [
   {
     icon: UserQuestion01Icon,
     title: "Unverified Exeat",
-    body: "Boarders get signed out by whoever arrives with the right name. Without a verified guardian record, a school cannot prove the person at the gate is the person the parent actually approved.",
+    body: "Boarders get signed out by whoever arrives with the right name. Without a verified guardian record, nobody can prove otherwise.",
   },
   {
     icon: BedSingle01Icon,
     title: "Hostel Roll Call",
-    body: "Hostel registers are taken once a night and filed away in a book. The next morning, nobody can answer a simple question: where was my child at 9pm?",
+    body: "Registers are taken once a night and filed in a book. Next morning, nobody can answer: where was my child at 9pm?",
   },
   {
     icon: Alert02Icon,
     title: "Emergencies After Hours",
-    body: "A student falls ill at midnight and their parents are three states away. Every minute spent hunting for the right phone number in a paper file is a minute lost.",
+    body: "A student falls ill at midnight, their parents three states away. Every minute spent hunting for a phone number is a minute lost.",
   },
   {
     icon: NotificationOff01Icon,
     title: "Weeks of Silence",
-    body: "Between visiting days, most boarding parents hear nothing at all. News of a problem reaches them long after it started, and always second-hand.",
+    body: "Between visiting days, parents hear nothing at all. News of a problem arrives late, and second-hand.",
   },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
+
+function PlayBadge() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 grid place-items-center"
+    >
+      <span className="relative grid h-20 w-20 place-items-center sm:h-24 mt-28 sm:w-24">
+        <span className="absolute inset-0 animate-halo rounded-full bg-brand-yellow blur-lg" />
+        <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-yellow" />
+        <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-yellow [animation-delay:1.3s]" />
+
+        <span className="relative grid h-full w-full animate-glow place-items-center rounded-full bg-brand-yellow text-ink shadow-xl [--glow:var(--color-brand-yellow)] transition duration-300 group-hover:scale-110 group-hover:bg-brand-yellow-light group-hover:[--glow:var(--color-brand-yellow-light)]">
+          <HugeiconsIcon
+            icon={PlayIcon}
+            size={34}
+            strokeWidth={2.2}
+            className="translate-x-0.5"
+          />
+        </span>
+      </span>
+    </span>
+  );
+}
 
 function ProblemMark({
   number,
@@ -69,7 +115,7 @@ function ProblemMark({
   icon: typeof UserRemove01Icon;
 }) {
   return (
-    <div className="relative flex h-20 items-end sm:h-24">
+    <div className="relative flex h-20 mt-2 items-end sm:h-24">
       <span
         aria-hidden
         className="pointer-events-none absolute top-0 left-0 select-none font-header text-[4.5rem] leading-none font-extrabold tracking-tight text-brand/15 sm:text-[5.5rem]"
@@ -93,6 +139,9 @@ export default function ProblemSection() {
   const boardingRef = useRef<HTMLDivElement>(null);
   const boardingInView = useInView(boardingRef, { once: true, amount: 0.15 });
 
+  // Which clip the player is showing; null when it is closed.
+  const [playing, setPlaying] = useState<keyof typeof CLIPS | null>(null);
+
   const reveal = (delay: number) => ({
     initial: { opacity: 0, y: 22 },
     animate: inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 22 },
@@ -113,12 +162,7 @@ export default function ProblemSection() {
       className="relative py-24 text-ink md:py-32"
     >
       <div ref={ref} className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8">
-        <motion.span
-          {...reveal(0)}
-          className="text-xs font-semibold uppercase tracking-[0.22em] text-soft"
-        >
-          Problem Statement
-        </motion.span>
+        <SectionCaption {...reveal(0)}>Problem Statement</SectionCaption>
 
         <motion.h2
           {...reveal(0.12)}
@@ -132,15 +176,12 @@ export default function ProblemSection() {
           {...reveal(0.24)}
           className="mt-6 max-w-3xl text-lg leading-8 text-soft"
         >
-          Many administrators have failed to lay a foundation of safety for their
-          schools which has resulted to:
+          Many administrators have failed to lay a foundation of safety for
+          their schools which has resulted to:
         </motion.p>
         <div className="mt-16 grid gap-x-10 gap-y-14 md:grid-cols-2 lg:gap-x-12 xl:grid-cols-4">
           {PROBLEMS.map((problem, i) => (
-            <motion.article
-              key={problem.title}
-              {...reveal(0.4 + i * 0.15)}
-            >
+            <motion.article key={problem.title} {...reveal(0.4 + i * 0.15)}>
               <ProblemMark number={i + 1} icon={problem.icon} />
 
               <h3 className="mt-8 font-header text-xl font-extrabold leading-snug tracking-tight sm:text-2xl">
@@ -153,15 +194,23 @@ export default function ProblemSection() {
           ))}
 
           <motion.div {...reveal(0.85)} className="relative">
-            <Image
-              src={PROBLEM_IMAGE}
-              alt="A parent worrying about their child safety at school"
-              loading="lazy"
-              width={800}
-              height={920}
-              sizes="(min-width: 1024px) 22rem, (min-width: 768px) 45vw, 92vw"
-              className="relative aspect-4/5 w-full object-cover mask-[radial-gradient(ellipse_78%_78%_at_50%_50%,black_45%,transparent_100%)] lg:aspect-3/4"
-            />
+            <button
+              type="button"
+              onClick={() => setPlaying("parent")}
+              aria-label={"Play: " + CLIPS.parent.label}
+              className="group relative block w-full cursor-pointer"
+            >
+              <Image
+                src={PROBLEM_IMAGE}
+                alt="A parent worrying about their child safety at school"
+                loading="lazy"
+                width={800}
+                height={920}
+                sizes="(min-width: 1024px) 22rem, (min-width: 768px) 45vw, 92vw"
+                className="relative aspect-4/5 w-full object-cover mask-x-from-78% mask-y-from-84% lg:aspect-3/4"
+              />
+              <PlayBadge />
+            </button>
           </motion.div>
         </div>
         <div ref={boardingRef} className="mt-24 md:mt-32">
@@ -206,19 +255,33 @@ export default function ProblemSection() {
               {...revealBoarding(0.8)}
               className="flex items-end justify-center lg:justify-end"
             >
-              <Image
-                src={STUDENT_IMAGE}
-                alt="A secondary school student in uniform heading to class"
-                loading="lazy"
-                width={760}
-                height={1490}
-                sizes="(min-width: 1280px) 19rem, (min-width: 1024px) 17rem, 15rem"
-                className="h-auto w-full max-w-60 lg:max-w-none"
-              />
+              <button
+                type="button"
+                onClick={() => setPlaying("student")}
+                aria-label={"Play: " + CLIPS.student.label}
+                className="group relative block w-full max-w-60 cursor-pointer lg:max-w-none"
+              >
+                <Image
+                  src={STUDENT_IMAGE}
+                  alt="A secondary school student in uniform heading to class"
+                  loading="lazy"
+                  width={620}
+                  height={1215}
+                  sizes="(min-width: 1280px) 19rem, (min-width: 1024px) 17rem, 15rem"
+                  className="h-auto w-full mask-b-from-72%"
+                />
+                <PlayBadge />
+              </button>
             </motion.div>
           </div>
         </div>
       </div>
+      <VideoLightbox
+        src={playing ? CLIPS[playing].src : ""}
+        label={playing ? CLIPS[playing].label : "Video"}
+        open={playing !== null}
+        onClose={() => setPlaying(null)}
+      />
     </section>
   );
 }

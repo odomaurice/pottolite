@@ -1,28 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useInView } from "framer-motion";
+import { useCallback, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
+import VideoLightbox from "./VideoLightbox";
 import {
   AnalyticsUpIcon,
-  Cancel01Icon,
   PlayIcon,
   Shield01Icon,
   SquareLock01Icon,
 } from "@hugeicons/core-free-icons";
+import SectionCaption from "@/components/SectionCaption";
 
-/**
- * The three devices as one composed shot, cropped to its opaque bounds and
- * re-exported from `png png.png` (1567x767, 554KB, with a filename that had a
- * space in it). One image rather than three separately-positioned ones: the
- * arrangement, overlap and shadows are baked in, which no amount of flexbox
- * would have reproduced.
- *
- * The separate /devices/{laptop,tablet,phone}.webp crops are still on disk if
- * the row-of-three is ever wanted back.
- */
+
 const DEVICES_IMAGE = "/devices/potto-devices.webp";
 
 const CLAIMS = [
@@ -42,22 +33,9 @@ const CLAIMS = [
     body: "Your data is protected with top level security and reliability.",
   },
 ];
-
-/**
- * One column split shared by both rows of the section, so the artwork's left
- * edge lands on the same line as "Watch a school day run on Potto:" above it,
- * and the claims run down under the headline.
- *
- * Declared once and spread into both rows because the two only stay aligned
- * while their template *and* their gap are identical — set them separately and
- * they drift the moment either is touched.
- *
- * 5:7 rather than an even split: it holds the artwork column slightly wider
- * than it was before, which is what the alignment was not allowed to cost.
- */
 const COLUMNS = "md:grid-cols-[5fr_7fr] md:gap-8 lg:gap-12";
 
-const VIDEO_SRC = "/videos/intro.MOV";
+const VIDEO_SRC = "/videos/intro.mp4";
 
 const CHECKLIST = ["Gate Check-in", "Live Register", "Real-time Alert"];
 
@@ -74,8 +52,6 @@ const T = {
 
 export default function IntroVideoSection() {
   const [open, setOpen] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
 
   const copyRef = useRef<HTMLDivElement>(null);
   const inView = useInView(copyRef, { once: true, amount: 0.2 });
@@ -90,32 +66,6 @@ export default function IntroVideoSection() {
 
   const close = useCallback(() => setOpen(false), []);
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  useEffect(() => {
-    if (!open) return;
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") close();
-    };
-
-    const previousOverflow = document.body.style.overflow;
-    const previousPadding = document.body.style.paddingRight;
-    const scrollbar = window.innerWidth - document.documentElement.clientWidth;
-
-    document.body.style.overflow = "hidden";
-    if (scrollbar > 0) document.body.style.paddingRight = `${scrollbar}px`;
-    window.addEventListener("keydown", onKey);
-    closeRef.current?.focus();
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      document.body.style.paddingRight = previousPadding;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, close]);
-
   return (
     <section
       id="intro-video"
@@ -127,30 +77,21 @@ export default function IntroVideoSection() {
         ref={copyRef}
         className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8"
       >
+        <SectionCaption {...reveal(T.pill)} className="mb-12">
+          Potto in action
+        </SectionCaption>
+
         <div className={`grid items-start gap-10 ${COLUMNS}`}>
           <div>
-            <motion.span
-              {...reveal(T.pill)}
-              className="inline-block rounded-full bg-brand px-5 py-2.5 text-base font-semibold text-brand-fg sm:px-6 sm:py-3 sm:text-lg"
-            >
-              Potto in action
-            </motion.span>
-
             <motion.h2
               {...reveal(T.headline)}
-              /* Capped at 6xl. The headline column is narrower now that the
-                 split favours the artwork, and at 7xl "Ninety seconds" breaks
-                 across two lines of its own. */
-              className="mt-6 font-header text-4xl font-extrabold leading-[1.04] tracking-tight sm:mt-7 sm:text-5xl md:text-5xl lg:text-6xl"
+              className="font-header text-4xl font-extrabold leading-[1.04] tracking-tight sm:text-5xl md:text-5xl lg:text-6xl"
             >
               Ninety seconds
               <br />
               with <span className="text-brand">Potto</span>
             </motion.h2>
           </div>
-
-          {/* The indent is the look on wide screens, but on a phone it is just
-              lost width, so it only starts at lg. */}
           <div className="md:pt-2 lg:pt-4 lg:pl-10 xl:pl-12">
             <motion.p
               {...reveal(T.listHeading)}
@@ -158,12 +99,6 @@ export default function IntroVideoSection() {
             >
               Watch a school day run on Potto:
             </motion.p>
-
-            {/* List and play control sit side by side once there is room for
-                both, grouped by a set gap rather than pushed apart to the
-                column edges — this column is the wide one, so `justify-between`
-                stranded the button on the far right with a few hundred pixels
-                of nothing beside it. Below sm the button drops under the list. */}
             <div className="mt-6 flex flex-col gap-8 sm:flex-row sm:items-center sm:gap-10 lg:gap-12">
               <ul className="space-y-3">
                 {CHECKLIST.map((item, i) => (
@@ -203,14 +138,8 @@ export default function IntroVideoSection() {
                   type="button"
                   onClick={() => setOpen(true)}
                   aria-label="Play the Potto introduction video"
-                  /* `animate-glow` rather than a static `shadow-*`: a running
-                     animation outranks ordinary declarations, so a hover shadow
-                     would simply be ignored here. Hover recolours the glow by
-                     reassigning `--glow` instead. */
                   className="group relative grid h-16 w-16 shrink-0 animate-glow place-items-center rounded-full bg-brand-yellow text-ink [--glow:var(--color-brand-yellow)] transition duration-300 hover:scale-105 hover:bg-brand-yellow-light hover:[--glow:var(--color-brand-yellow-light)] sm:h-18 sm:w-18 lg:h-20 lg:w-20"
                 >
-                  {/* Two rings, the second half a cycle behind, so one is always
-                      on its way out. Both start hidden behind the button face. */}
                   <span
                     aria-hidden
                     className="absolute inset-0 -z-10 animate-pulse-ring rounded-full bg-brand-yellow"
@@ -228,7 +157,7 @@ export default function IntroVideoSection() {
                     icon={PlayIcon}
                     size={30}
                     strokeWidth={2}
-                    className="translate-x-0.5"
+                    className="translate-x-0.5 cursor-pointer"
                   />
                 </button>
 
@@ -240,20 +169,11 @@ export default function IntroVideoSection() {
           </div>
         </div>
       </div>
-      {/* Same container and the same COLUMNS split as the copy above, which is
-          what puts the artwork's left edge on the headline block's right-hand
-          column line rather than somewhere near it. */}
       <div
         ref={artRef}
         className="mx-auto mt-14 w-full max-w-7xl px-5 md:mt-20 md:px-6 lg:px-8"
       >
         <div className={`grid items-center gap-12 ${COLUMNS}`}>
-          {/* Decorative — the claims beside it carry the meaning. The
-              aria-hidden belongs here and not on the wrapper, which would take
-              the claims out of the accessibility tree with it.
-
-              First in the DOM so it comes first when the row stacks on a phone,
-              but placed in the second column on wider screens. */}
           <div
             aria-hidden
             className="pointer-events-none md:col-start-2 md:row-start-1"
@@ -311,68 +231,12 @@ export default function IntroVideoSection() {
         </div>
       </div>
 
-      {mounted &&
-        createPortal(
-          <AnimatePresence>
-            {open && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3, ease }}
-                onClick={close}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Potto introduction video"
-                className="fixed inset-0 z-100 flex flex-col items-center justify-center gap-5 bg-ink/85 px-4 py-6 backdrop-blur-xl md:px-8"
-              >
-                <button
-                  ref={closeRef}
-                  type="button"
-                  onClick={close}
-                  aria-label="Close video"
-                  className="flex shrink-0 items-center gap-2 self-end rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white/80 transition hover:border-white/30 hover:bg-white/15 hover:text-white"
-                >
-                  Close
-                  <HugeiconsIcon
-                    icon={Cancel01Icon}
-                    size={16}
-                    strokeWidth={2}
-                  />
-                </button>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.94, y: 18 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.96, y: 10 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 240,
-                    damping: 26,
-                    mass: 0.7,
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-5xl"
-                >
-                  <div
-                    aria-hidden
-                    className="absolute -inset-6 -z-10 rounded-[3rem] bg-brand-teal/20 blur-3xl"
-                  />
-
-                  <video
-                    ref={videoRef}
-                    src={VIDEO_SRC}
-                    autoPlay
-                    controls
-                    playsInline
-                    className="max-h-[78vh] w-full rounded-[1.75rem] bg-black shadow-2xl"
-                  ></video>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
+      <VideoLightbox
+        src={VIDEO_SRC}
+        label="Potto introduction video"
+        open={open}
+        onClose={close}
+      />
     </section>
   );
 }
