@@ -13,13 +13,13 @@ import {
 } from "@hugeicons/core-free-icons";
 
 const navItems = [
-  { label: "Features", href: "#features" },
-  { label: "Solutions", href: "#solutions" },
-  { label: "Potto Suite", href: "#suite" },
-  { label: "Plans", href: "#plans" },
-  { label: "Hardware", href: "#hardware" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Features", href: "/#features" },
+  { label: "Solutions", href: "/#solutions" },
+  { label: "Potto Suite", href: "/#suite" },
+  { label: "Plans", href: "/#plans" },
+  { label: "Hardware", href: "/#hardware" },
+  { label: "Testimonials", href: "/#testimonials" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 const PROBE_Y = 48;
@@ -121,7 +121,7 @@ export default function HomeHeader() {
               />
             </Link>
             <Link
-              href="#intro-video"
+              href="/#intro-video"
               className="hidden animate-glow items-center justify-center gap-2 rounded-full bg-brand-yellow px-5 py-3 text-sm font-semibold text-ink [--glow:var(--color-brand-yellow)] transition duration-300 hover:bg-brand-teal hover:[--glow:var(--color-brand-teal)] sm:inline-flex lg:px-8 lg:py-4 lg:text-base"
             >
               <HugeiconsIcon icon={PlayIcon} size={18} strokeWidth={2} />
@@ -180,7 +180,7 @@ export default function HomeHeader() {
                   Get started
                 </Link>
                 <Link
-                  href="#intro-video"
+                  href="/#intro-video"
                   onClick={() => setOpen(false)}
                   className="rounded-xl bg-brand-yellow px-4 py-2.5 text-center text-sm font-semibold text-ink transition hover:bg-brand-teal"
                 >

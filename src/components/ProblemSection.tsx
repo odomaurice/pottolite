@@ -4,10 +4,10 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
+import PlayBadge from "./PlayBadge";
 import VideoLightbox from "./VideoLightbox";
 import {
   Alert02Icon,
-  PlayIcon,
   BedSingle01Icon,
   CalendarRemove01Icon,
   NotificationOff01Icon,
@@ -17,15 +17,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import SectionCaption from "@/components/SectionCaption";
 
-/**
- * Each portrait is the poster for its own clip.
- *
- * ── PLACEHOLDER SOURCES ──────────────────────────────────────────────────
- * Both currently point at the intro film, because that is the only video in
- * /public/videos. The wiring is per-image, so dropping the two real files in
- * and changing these two strings is the whole job — nothing else moves.
- * ─────────────────────────────────────────────────────────────────────────
- */
+
 const CLIPS = {
   parent: {
     src: "/videos/intro.mp4",
@@ -82,30 +74,6 @@ const BOARDING_PROBLEMS = [
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
-
-function PlayBadge() {
-  return (
-    <span
-      aria-hidden
-      className="pointer-events-none absolute inset-0 grid place-items-center"
-    >
-      <span className="relative grid h-20 w-20 place-items-center sm:h-24 mt-28 sm:w-24">
-        <span className="absolute inset-0 animate-halo rounded-full bg-brand-yellow blur-lg" />
-        <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-yellow" />
-        <span className="absolute inset-0 animate-pulse-ring rounded-full bg-brand-yellow [animation-delay:1.3s]" />
-
-        <span className="relative grid h-full w-full animate-glow place-items-center rounded-full bg-brand-yellow text-ink shadow-xl [--glow:var(--color-brand-yellow)] transition duration-300 group-hover:scale-110 group-hover:bg-brand-yellow-light group-hover:[--glow:var(--color-brand-yellow-light)]">
-          <HugeiconsIcon
-            icon={PlayIcon}
-            size={34}
-            strokeWidth={2.2}
-            className="translate-x-0.5"
-          />
-        </span>
-      </span>
-    </span>
-  );
-}
 
 function ProblemMark({
   number,
@@ -209,7 +177,7 @@ export default function ProblemSection() {
                 sizes="(min-width: 1024px) 22rem, (min-width: 768px) 45vw, 92vw"
                 className="relative aspect-4/5 w-full object-cover mask-x-from-78% mask-y-from-84% lg:aspect-3/4"
               />
-              <PlayBadge />
+              <PlayBadge className="mt-28" />
             </button>
           </motion.div>
         </div>
@@ -270,7 +238,7 @@ export default function ProblemSection() {
                   sizes="(min-width: 1280px) 19rem, (min-width: 1024px) 17rem, 15rem"
                   className="h-auto w-full mask-b-from-72%"
                 />
-                <PlayBadge />
+                <PlayBadge className="mt-28" />
               </button>
             </motion.div>
           </div>

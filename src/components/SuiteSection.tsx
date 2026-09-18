@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ComponentProps,
+} from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Modal from "./Modal";
@@ -16,7 +22,15 @@ import {
   ShoppingCart01Icon,
   Wallet02Icon,
 } from "@hugeicons/core-free-icons";
+import PlanDrawer from "@/components/PlanDrawer";
 import SectionCaption from "@/components/SectionCaption";
+import { cloudinaryLoader } from "@/lib/cloudinary";
+import {
+  findApp,
+  formatPrice,
+  plansIncluding,
+  type Plan,
+} from "@/lib/plans";
 
 
 const ANCILLARY = [
@@ -100,7 +114,64 @@ const BLURB =
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export default function SuiteSection() {
+type IconData = ComponentProps<typeof HugeiconsIcon>["icon"];
+
+const MARK = {
+  card: {
+    disc: "h-14 w-14 bg-white shadow-md transition duration-300 group-hover:scale-110",
+    fallback:
+      "h-14 w-14 bg-brand-yellow text-white shadow-md transition duration-300 group-hover:scale-110",
+    image: 32,
+    icon: 26,
+  },
+  dialog: {
+    disc: "mx-auto h-16 w-16 bg-brand/10",
+    fallback: "mx-auto h-16 w-16 bg-brand-gold text-white",
+    image: 36,
+    icon: 30,
+  },
+};
+
+/**
+ * A service's mark: its own icon from the plans API where it has one, else
+ * the hugeicon. The API icons are teal marks drawn for a white ground — a
+ * white disc on the teal card, a pale teal one in the white dialog. The
+ * hugeicon keeps the brand-colour disc it always had; today that is only
+ * Potto Comm, which has no counterpart in the API.
+ */
+function ServiceMark({
+  src,
+  icon,
+  variant,
+}: {
+  src: string | null;
+  icon: IconData;
+  variant: keyof typeof MARK;
+}) {
+  const mark = MARK[variant];
+  return (
+    <span
+      className={`relative grid place-items-center rounded-full ${
+        src ? mark.disc : mark.fallback
+      }`}
+    >
+      {src ? (
+        <Image
+          src={src}
+          loader={cloudinaryLoader}
+          alt=""
+          width={mark.image}
+          height={mark.image}
+          className="object-contain"
+        />
+      ) : (
+        <HugeiconsIcon icon={icon} size={mark.icon} strokeWidth={1.9} />
+      )}
+    </span>
+  );
+}
+
+export default function SuiteSection({ plans }: { plans: Plan[] | null }) {
   const headRef = useRef<HTMLDivElement>(null);
   const headInView = useInView(headRef, { once: true, amount: 0.5 });
   const auxRef = useRef<HTMLDivElement>(null);
@@ -145,6 +216,26 @@ export default function SuiteSection() {
   const [openService, setOpenService] = useState<
     (typeof ANCILLARY)[number] | null
   >(null);
+
+  // The plan sheet opened from a service's "Included in" row: the same
+  // PlanDrawer the Plans section uses, with its own open state.
+  const [planId, setPlanId] = useState<string | null>(null);
+
+  // Which plans include a service, from the plans API. Empty for a service
+  // with no counterpart among the API's apps (Potto Comm) — that card then
+  // shows nothing, rather than a guess.
+  const including = (name: string) => (plans ? plansIncluding(name, plans) : []);
+
+  // A service's own icon from the plans API; null falls back to its hugeicon.
+  const iconOf = (name: string) =>
+    (plans && findApp(name, plans)?.icon) || null;
+  const coverage = (name: string) => {
+    const included = including(name);
+    if (!plans || included.length === 0) return "";
+    if (included.length === plans.length) return "In every plan";
+    const names = included.map((plan) => plan.name);
+    return `${names.join(" · ")} ${names.length === 1 ? "plan" : "plans"}`;
+  };
 
   const reveal = (visible: boolean, delay: number) => ({
     initial: { opacity: 0, y: 22 },
@@ -276,13 +367,11 @@ export default function SuiteSection() {
                   className="absolute inset-0 bg-linear-to-b from-brand-teal-dark/50 via-brand-teal-dark/78 to-brand-teal-dark/95 transition-colors duration-300 group-hover:from-brand-teal-dark/35"
                 />
 
-                <span className="relative grid h-14 w-14 place-items-center rounded-full bg-brand-gold text-white shadow-md transition duration-300 group-hover:scale-110">
-                  <HugeiconsIcon
-                    icon={product.icon}
-                    size={26}
-                    strokeWidth={1.9}
-                  />
-                </span>
+                <ServiceMark
+                  src={iconOf(product.name)}
+                  icon={product.icon}
+                  variant="card"
+                />
 
                 <h3 className="relative mt-6 font-header text-2xl font-extrabold tracking-tight">
                   {product.name}
@@ -291,7 +380,13 @@ export default function SuiteSection() {
                   {product.tagline}
                 </p>
 
-                <span className="relative mt-auto grid h-9 w-9 place-items-center rounded-full bg-brand-gold text-white transition duration-300 group-hover:scale-110">
+                {coverage(product.name) && (
+                  <span className="relative mt-5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white">
+                    {coverage(product.name)}
+                  </span>
+                )}
+
+                <span className="relative mt-auto grid h-9 w-9 place-items-center rounded-full bg-brand-yellow text-white transition duration-300 group-hover:scale-110">
                   <HugeiconsIcon
                     icon={ArrowRight01Icon}
                     size={18}
@@ -310,13 +405,11 @@ export default function SuiteSection() {
       >
         {openService && (
           <div className="max-h-full w-full max-w-xl overflow-y-auto rounded-3xl bg-white p-7 text-center text-ink shadow-2xl sm:p-10">
-            <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-gold text-white">
-              <HugeiconsIcon
-                icon={openService.icon}
-                size={30}
-                strokeWidth={1.9}
-              />
-            </span>
+            <ServiceMark
+              src={iconOf(openService.name)}
+              icon={openService.icon}
+              variant="dialog"
+            />
 
             <h3 className="mt-5 font-header text-2xl font-extrabold tracking-tight sm:text-3xl">
               {openService.name}
@@ -339,7 +432,39 @@ export default function SuiteSection() {
               ))}
             </ul>
 
-            <div className="mt-8 flex justify-center">
+            {/* Each plan opens its own sheet, so "what does this cost?" is
+                answered without leaving the page. Choosing one closes this
+                dialog as the sheet opens, rather than stacking the two. */}
+            {including(openService.name).length > 0 && (
+              <div className="mt-6 sm:mt-8">
+                <p className="text-xs font-semibold tracking-[0.22em] text-soft uppercase">
+                  Included in
+                </p>
+                <div className="mt-3 flex flex-wrap justify-center gap-2">
+                  {including(openService.name).map((plan) => (
+                    <button
+                      key={plan.id}
+                      type="button"
+                      onClick={() => {
+                        setOpenService(null);
+                        setPlanId(plan.id);
+                      }}
+                      className="inline-flex cursor-pointer items-center gap-1 rounded-full bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand transition hover:bg-brand/15 sm:gap-1.5 sm:px-4 sm:py-2 sm:text-sm"
+                    >
+                      {plan.name}
+                      {/* The Free plan's price would only repeat its name. */}
+                      {plan.price > 0 && (
+                        <span className="font-medium">
+                          · {formatPrice(plan.price)}
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-center sm:mt-8">
               <Link
                 href={openService.href}
                 className="inline-flex animate-glow items-center gap-2.5 rounded-full bg-brand-gold px-7 py-3.5 text-[0.95rem] font-semibold text-white [--glow:var(--color-brand-gold)] transition duration-300 hover:scale-105 hover:bg-brand-yellow hover:[--glow:var(--color-brand-yellow)]"
@@ -355,6 +480,15 @@ export default function SuiteSection() {
           </div>
         )}
       </Modal>
+
+      {plans && (
+        <PlanDrawer
+          plans={plans}
+          planId={planId}
+          onSelect={setPlanId}
+          onClose={() => setPlanId(null)}
+        />
+      )}
     </section>
   );
 }

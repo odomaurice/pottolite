@@ -1,5 +1,3 @@
-"use client";
-
 import FaqSection from "@/components/FaqSection";
 import FeaturesSection from "@/components/FeaturesSection";
 import HardwareSection from "@/components/HardwareSection";
@@ -13,9 +11,13 @@ import ProblemSection from "@/components/ProblemSection";
 import SiteFooter from "@/components/SiteFooter";
 import SolutionsSection from "@/components/SolutionsSection";
 import SuiteSection from "@/components/SuiteSection";
+import TeamSection from "@/components/TeamSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
+import { getPlans } from "@/lib/get-plans";
 
-export default function Home() {
+export default async function Home() {
+  const plans = await getPlans();
+
   return (
     <main className="relative min-h-screen overflow-x-hidden font-poppins text-ink">
       <PageBackdrop />
@@ -26,9 +28,10 @@ export default function Home() {
       <FeaturesSection />
       <ProblemSection />
       <HardwareSection />
-      <SuiteSection />
+      <SuiteSection plans={plans} />
       <SolutionsSection />
-      <PlansSection />
+      <PlansSection plans={plans} />
+      <TeamSection />
       <TestimonialsSection />
       <FaqSection />
       <SiteFooter />

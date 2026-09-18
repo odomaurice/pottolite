@@ -2,11 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-// Each id must match an anchor rendered on the homepage, AND this list must
-// stay in the same order the sections appear in page.tsx. The active dot is the
-// last entry whose top has passed the probe, walked in list order — so an entry
-// out of sequence highlights the wrong dot and sends clicks to the wrong place.
-// It had drifted once already (hardware and plans had both moved in page.tsx).
+
 type Section = { id: string | null; label: string };
 
 const SECTIONS: Section[] = [
@@ -18,6 +14,7 @@ const SECTIONS: Section[] = [
   { id: "suite", label: "Potto Suite" },
   { id: "solutions", label: "Solutions" },
   { id: "plans", label: "Plans" },
+  { id: "team", label: "Our team" },
   { id: "testimonials", label: "Testimonials" },
   { id: "faq", label: "FAQ" },
 ];

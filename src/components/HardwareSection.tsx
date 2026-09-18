@@ -76,14 +76,6 @@ function DeviceLabel({
       <h3 className="font-header text-2xl leading-tight font-extrabold tracking-tight">
         {device.name}
       </h3>
-
-      {/* Gold text cannot follow the section onto teal: #ca8a04 on #0f766e
-          measures 1.86:1, which is all but invisible. The lighter yellow
-          gets to 3.57:1 — a large improvement and fine for an accent label
-          this short, though still shy of AA's 4.5:1 for body-size text.
-          Swap to plain white if the accent is not worth that. The filled
-          gold tiles below are unaffected: a shape carries a colour that
-          14px type cannot. */}
       <p className="mt-3 text-sm font-semibold text-brand-yellow-light">
         Best use case
       </p>
@@ -121,8 +113,6 @@ export default function HardwareSection() {
       id="hardware"
       data-nav-tone="dark"
       data-nav-bg="var(--color-brand-teal-dark)"
-      /* A self-contained teal band: Problem above and Suite below are both
-         light, so this needs symmetric padding to sit square between them. */
       className="relative isolate bg-brand-teal-dark py-24 text-white md:py-32"
     >
       <div ref={ref} className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8">
@@ -131,7 +121,6 @@ export default function HardwareSection() {
         </SectionCaption>
 
         <div className="grid gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12 xl:gap-16">
-          {/* ---------- Copy and process ---------- */}
           <div>
             <motion.h2
               {...reveal(0)}
@@ -164,7 +153,7 @@ export default function HardwareSection() {
                   {...reveal(0.3 + i * 0.1)}
                   className="flex gap-5"
                 >
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-gold text-white">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-brand-yellow text-white">
                     <HugeiconsIcon
                       icon={step.icon}
                       size={24}

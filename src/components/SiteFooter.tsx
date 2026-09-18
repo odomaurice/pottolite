@@ -28,13 +28,13 @@ const PRODUCTS = [
 ];
 
 const COMPANY = [
-  { label: "Features", href: "#features" },
-  { label: "Solutions", href: "#solutions" },
-  { label: "Potto Suite", href: "#suite" },
-  { label: "Plans", href: "#plans" },
-  { label: "Hardware", href: "#hardware" },
-  { label: "Watch demo", href: "#intro-video" },
-  { label: "Testimonials", href: "#testimonials" },
+  { label: "Features", href: "/#features" },
+  { label: "Solutions", href: "/#solutions" },
+  { label: "Potto Suite", href: "/#suite" },
+  { label: "Plans", href: "/#plans" },
+  { label: "Hardware", href: "/#hardware" },
+  { label: "Watch demo", href: "/#intro-video" },
+  { label: "Testimonials", href: "/#testimonials" },
 ];
 
 const PHONES = ["+234 808 472 4276", "+234 812 557 8825"];
@@ -142,7 +142,7 @@ export default function SiteFooter() {
               {PRODUCTS.map((product) => (
                 <li key={product}>
                   <Link
-                    href="#suite"
+                    href="/#suite"
                     className="text-[0.95rem] text-white/70 transition-colors hover:text-highlight"
                   >
                     {product}

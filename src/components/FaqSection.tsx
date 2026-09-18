@@ -1,23 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Add01Icon,
+  ArrowDown01Icon,
   Cancel01Icon,
   Search01Icon,
 } from "@hugeicons/core-free-icons";
 import SectionCaption from "@/components/SectionCaption";
 
-/**
- * Frequently asked questions.
- *
- * The questions are phrased as the objections a school actually raises when it
- * is close to buying ("Do we have to set everything up ourselves?" rather than
- * "Will Potto's team handle setup?"). That is the point of the copy, so resist
- * tidying them into product-spec headings.
- */
 type Group = { title: string; items: { q: string; a: string }[] };
 
 const GROUPS: Group[] = [
@@ -185,13 +178,7 @@ const termsOf = (query: string) =>
 // User input goes into a RegExp below, so the metacharacters have to go.
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/**
- * Panel ids come from the question text, not its position.
- *
- * Filtering reorders and removes entries, so an index-based id would let an
- * open card keep an id that now belongs to a different question — the wrong
- * panel would appear expanded the moment you typed.
- */
+
 const slug = (s: string) =>
   s
     .toLowerCase()
@@ -199,14 +186,7 @@ const slug = (s: string) =>
     .replace(/^-|-$/g, "")
     .slice(0, 60);
 
-/**
- * Marks each matched term inside a string.
- *
- * The split pattern is capturing, so the matches come back as array entries
- * alongside the text between them; a term is identified by lowercased lookup
- * rather than by re-testing the RegExp, because a /g/ RegExp carries lastIndex
- * between calls and would match every other time.
- */
+
 function Highlight({ text, terms }: { text: string; terms: string[] }) {
   if (!terms.length) return <>{text}</>;
 
@@ -238,6 +218,21 @@ export default function FaqSection() {
   const [query, setQuery] = useState("");
   const reduced = useReducedMotion();
 
+  // Sections collapse and expand as a whole, several at a time if you like.
+  // The first starts open so the FAQ never loads as a bare list of headings.
+  const [openGroups, setOpenGroups] = useState<Set<string>>(
+    () => new Set([GROUPS[0].title]),
+  );
+  const toggleGroup = (title: string) =>
+    setOpenGroups((current) => {
+      const next = new Set(current);
+      if (next.has(title)) next.delete(title);
+      else next.add(title);
+      return next;
+    });
+  const allOpen = GROUPS.every((group) => openGroups.has(group.title));
+  const controlsRef = useRef<HTMLDivElement>(null);
+
   const terms = useMemo(() => termsOf(query), [query]);
 
   // Questions AND answers are searched: someone looking for "refund" or
@@ -255,6 +250,11 @@ export default function FaqSection() {
   }, [terms]);
 
   const matches = filtered.reduce((n, group) => n + group.items.length, 0);
+
+  // While searching, every section with a match is forced open: a match hidden
+  // inside a collapsed section would look exactly like no match at all.
+  // Clearing the search puts back whatever was open before.
+  const searching = terms.length > 0;
 
   /**
    * Reveal on enter, hide again on leave.
@@ -366,86 +366,187 @@ export default function FaqSection() {
           </div>
         )}
 
-        <div className="mt-16 space-y-14">
-          {filtered.map((group) => (
-            <div key={group.title}>
-              <motion.h3
-                {...reveal}
-                className="font-header text-lg font-extrabold tracking-tight text-brand sm:text-xl"
-              >
-                {group.title}
-              </motion.h3>
+        {/* Hidden while searching, when the matching sections are open anyway;
+            min-h keeps the layout from jumping as it comes and goes. */}
+        <div
+          ref={controlsRef}
+          className="mt-12 flex min-h-6 scroll-mt-28 justify-end"
+        >
+          {!searching && (
+            <button
+              type="button"
+              onClick={() => {
+                if (!allOpen) {
+                  setOpenGroups(new Set(GROUPS.map((group) => group.title)));
+                  return;
+                }
+                setOpenGroups(new Set());
+                // Collapsing everything removes most of the page below here,
+                // and the FAQ sits just above the footer, so the browser has
+                // to pull the scroll up — which threw the reader into
+                // Testimonials with the headers they wanted below the fold.
+                // Bringing the controls to the top (clear of the fixed header,
+                // via scroll-mt) keeps the collapsed sections in view.
+                //
+                // Instant, not smooth, on purpose. The collapse animates
+                // height "auto" -> 0, which framer-motion has to measure; after
+                // measuring it calls window.scrollTo(0, <the scrollY it
+                // recorded>) to undo any shift (motion-dom KeyframesResolver).
+                // Landing mid-way through a smooth scroll, that call cancels
+                // it — the page did not move at all. An instant scroll has
+                // already finished when motion records the position, so motion
+                // "restores" the page to the new place instead.
+                controlsRef.current?.scrollIntoView({ block: "start" });
+              }}
+              className="cursor-pointer text-sm font-semibold text-brand underline-offset-4 hover:underline"
+            >
+              {allOpen ? "Collapse all" : "Expand all"}
+            </button>
+          )}
+        </div>
 
-              {/* items-start so opening one card does not stretch the card
-                  beside it to match. */}
-              <ul className="mt-6 grid gap-4 md:grid-cols-2 md:items-start">
-                {group.items.map((item) => {
-                  const id = slug(item.q);
-                  const isOpen = open === id;
+        <div className="mt-4 space-y-3">
+          {filtered.map((group) => {
+            const gid = slug(group.title);
+            const expanded = searching || openGroups.has(group.title);
+            const count = group.items.length;
+            const noun = searching
+              ? count === 1
+                ? "match"
+                : "matches"
+              : count === 1
+                ? "question"
+                : "questions";
 
-                  return (
-                    <motion.li
-                      key={item.q}
-                      {...reveal}
-                      className="overflow-hidden rounded-2xl bg-brand-teal/35 transition-colors duration-300 hover:bg-brand-teal/45"
-                    >
-                      <button
-                        type="button"
-                        id={`faq-trigger-${id}`}
-                        aria-expanded={isOpen}
-                        aria-controls={`faq-panel-${id}`}
-                        onClick={() => setOpen(isOpen ? null : id)}
-                        className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left sm:p-6"
+            return (
+              <div key={group.title}>
+                {/* A tinted fill rather than an outline — the page avoids
+                    frames — lifting to the brand tint on hover. */}
+                <motion.div {...reveal}>
+                  <button
+                    type="button"
+                    id={`faq-group-${gid}`}
+                    aria-expanded={expanded}
+                    aria-controls={`faq-group-panel-${gid}`}
+                    onClick={() => toggleGroup(group.title)}
+                    disabled={searching}
+                    className="flex w-full cursor-pointer items-center justify-between gap-4 rounded-2xl bg-surface-2 px-5 py-4 text-left transition-colors duration-300 hover:bg-brand/10 disabled:cursor-default disabled:hover:bg-surface-2 sm:px-6 sm:py-5"
+                  >
+                    <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className="font-header text-lg font-extrabold tracking-tight text-brand sm:text-xl">
+                        {group.title}
+                      </span>
+                      <span className="text-sm text-soft">
+                        {count} {noun}
+                      </span>
+                    </span>
+
+                    {!searching && (
+                      <span
+                        aria-hidden
+                        className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-brand shadow-sm transition-transform duration-300 ${
+                          expanded ? "rotate-180" : ""
+                        }`}
                       >
-                        <span className="font-header text-[0.95rem] leading-snug font-extrabold tracking-tight sm:text-base">
-                          <Highlight text={item.q} terms={terms} />
-                        </span>
+                        <HugeiconsIcon
+                          icon={ArrowDown01Icon}
+                          size={20}
+                          strokeWidth={2.4}
+                        />
+                      </span>
+                    )}
+                  </button>
+                </motion.div>
 
-                        {/* One icon, rotated, rather than swapping plus for a
-                            cross: the 45 degree turn animates the state change
-                            instead of cutting between two glyphs. */}
-                        <span
-                          aria-hidden
-                          className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-brand transition-transform duration-300 ${
-                            isOpen ? "rotate-45" : ""
-                          }`}
-                        >
-                          <HugeiconsIcon
-                            icon={Add01Icon}
-                            size={20}
-                            strokeWidth={2.4}
-                          />
-                        </span>
-                      </button>
+                <AnimatePresence initial={false}>
+                  {expanded && (
+                    <motion.div
+                      key="group"
+                      id={`faq-group-panel-${gid}`}
+                      role="region"
+                      aria-labelledby={`faq-group-${gid}`}
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: reduced ? 0 : 0.4, ease }}
+                      className="overflow-hidden"
+                    >
+                      {/* items-start so opening one card does not stretch the
+                          card beside it. The spacing is padding in here, not
+                          margin outside, so a closed section collapses to its
+                          header with nothing left over. */}
+                      <ul className="grid gap-4 pt-4 pb-6 md:grid-cols-2 md:items-start">
+                        {group.items.map((item) => {
+                          const id = slug(item.q);
+                          const isOpen = open === id;
 
-                      <AnimatePresence initial={false}>
-                        {isOpen && (
-                          <motion.div
-                            key="panel"
-                            id={`faq-panel-${id}`}
-                            role="region"
-                            aria-labelledby={`faq-trigger-${id}`}
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{
-                              duration: reduced ? 0 : 0.32,
-                              ease,
-                            }}
-                            className="overflow-hidden"
-                          >
-                            <p className="px-5 pb-5 text-[0.9rem] leading-6 text-ink/75 sm:px-6 sm:pb-6">
-                              <Highlight text={item.a} terms={terms} />
-                            </p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
+                          return (
+                            <motion.li
+                              key={item.q}
+                              {...reveal}
+                              className="overflow-hidden rounded-2xl bg-brand-teal/35 transition-colors duration-300 hover:bg-brand-teal/45"
+                            >
+                              <button
+                                type="button"
+                                id={`faq-trigger-${id}`}
+                                aria-expanded={isOpen}
+                                aria-controls={`faq-panel-${id}`}
+                                onClick={() => setOpen(isOpen ? null : id)}
+                                className="flex w-full cursor-pointer items-center justify-between gap-4 p-5 text-left sm:p-6"
+                              >
+                                <span className="font-header text-[0.95rem] leading-snug font-extrabold tracking-tight sm:text-base">
+                                  <Highlight text={item.q} terms={terms} />
+                                </span>
+
+                                {/* One icon, rotated, rather than swapping plus for a
+                                    cross: the 45 degree turn animates the state change
+                                    instead of cutting between two glyphs. */}
+                                <span
+                                  aria-hidden
+                                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white text-brand transition-transform duration-300 ${
+                                    isOpen ? "rotate-45" : ""
+                                  }`}
+                                >
+                                  <HugeiconsIcon
+                                    icon={Add01Icon}
+                                    size={20}
+                                    strokeWidth={2.4}
+                                  />
+                                </span>
+                              </button>
+
+                              <AnimatePresence initial={false}>
+                                {isOpen && (
+                                  <motion.div
+                                    key="panel"
+                                    id={`faq-panel-${id}`}
+                                    role="region"
+                                    aria-labelledby={`faq-trigger-${id}`}
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{
+                                      duration: reduced ? 0 : 0.32,
+                                      ease,
+                                    }}
+                                    className="overflow-hidden"
+                                  >
+                                    <p className="px-5 pb-5 text-[0.9rem] leading-6 text-ink/75 sm:px-6 sm:pb-6">
+                                      <Highlight text={item.a} terms={terms} />
+                                    </p>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </motion.li>
+                          );
+                        })}
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
