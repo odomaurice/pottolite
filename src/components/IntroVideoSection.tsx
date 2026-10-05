@@ -71,17 +71,17 @@ export default function IntroVideoSection() {
       id="intro-video"
       data-nav-tone="light"
       data-nav-bg="var(--canvas)"
-      className="relative isolate overflow-hidden py-24 text-ink md:py-32"
+      className="relative isolate  overflow-hidden  py-24  text-ink md:py-32"
     >
       <div
         ref={copyRef}
-        className="mx-auto w-full max-w-7xl px-5 md:px-6 lg:px-8"
+        className="mx-auto w-full  max-w-7xl px-5 md:px-6 lg:px-8"
       >
         <SectionCaption {...reveal(T.pill)} className="mb-12">
           Potto in action
         </SectionCaption>
 
-        <div className={`grid items-start gap-10 ${COLUMNS}`}>
+        <div className={`grid items-start gap-10  ${COLUMNS}` }>
           <div>
             <motion.h2
               {...reveal(T.headline)}

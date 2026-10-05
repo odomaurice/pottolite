@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 
 
-const VIDEO_SRC = "/videos/intro.mp4";
+const VIDEO_SRC = "/videos/intro-main.mp4";
 const POSTER = "/hero-poster.webp";
 
 const ROTATE_MS = 6000;
@@ -103,9 +103,14 @@ export default function Hero() {
     <section
       ref={root}
       data-nav-tone="dark"
-      className="relative isolate flex min-h-[68vw] items-center justify-center overflow-hidden text-white landscape:min-h-svh"
+      // Phones get a taller hero at the cost of a symmetric crop; everything
+      // from sm up keeps the film's own 1.774 ratio, where cover crops nothing.
+      // 75vw is the ceiling: the captions in the film run from about 13% to
+      // 87% of its width, so a crop deeper than ~13% a side starts cutting the
+      // words. Raise this number and you will lose them.
+      className="relative isolate flex min-h-[75vw] items-center justify-center overflow-hidden rounded-b-[1.75rem] text-white sm:min-h-[56.5vw] sm:rounded-b-[2.5rem]"
     >
-      <div aria-hidden className="absolute inset-0 -z-10 bg-ink">
+      <div aria-hidden className="absolute inset-0  -z-10 bg-ink">
         <video
           ref={videoRef}
           autoPlay
@@ -118,8 +123,8 @@ export default function Hero() {
           className="relative z-10 h-full w-full object-cover object-center"
         />
 
-        <div className="absolute inset-x-0 top-0 z-20 h-40 bg-linear-to-b from-ink/60 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 z-20 h-14 bg-linear-to-b from-transparent via-canvas/60 to-canvas landscape:h-32 lg:landscape:h-36" />
+        
+        <div className="absolute inset-x-0 top-0 z-20 h-100 bg-linear-to-b from-ink/60 to-transparent sm:h-56 lg:h-80" />
       </div>
       <div className="relative z-10 mx-auto w-full max-w-4xl px-5 text-center md:px-6 lg:px-8 landscape:pt-32 landscape:pb-36 lg:landscape:pb-40">
         <AnimatePresence mode="wait">
@@ -135,7 +140,7 @@ export default function Hero() {
       </div>
 
     
-      <div data-hero-item className="absolute inset-x-0 bottom-0 z-10 pb-2">
+      {/* <div data-hero-item className="absolute   inset-x-0 bottom-0 z-10 pb-2">
         <div className="flex overflow-hidden mask-[linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]">
           <div ref={marquee} className="flex w-max">
             {[0, 1].map((copyIndex) => (
@@ -145,8 +150,8 @@ export default function Hero() {
                 className="flex shrink-0 items-center py-4"
               >
                 {PHRASES.map((phrase) => (
-                  <div key={phrase} className="flex shrink-0 items-center whitespace-nowrap">
-                    <span className="text-xs font-semibold uppercase tracking-[0.22em] text-soft md:text-sm">
+                  <div key={phrase} className="flex  shrink-0 items-center whitespace-nowrap">
+                    <span className="text-xs  font-semibold uppercase tracking-[0.22em] text-soft md:text-sm">
                       {phrase}
                     </span>
                     <span aria-hidden className="px-6 text-brand md:px-8">
@@ -158,7 +163,7 @@ export default function Hero() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }
