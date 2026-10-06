@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ---
 
-# Potto project rules
+# Pottolite project rules
 
 The block above is managed by `next dev`; everything below it is ours and
 survives regeneration. [`README.md`](README.md) explains the reasoning — this is
@@ -23,14 +23,12 @@ the short list of things that go wrong when they are not followed.
 - Claims about layout, animation or interaction need a browser, not a
   typecheck. See "Checking it in a browser" in the README.
 
-## Data
+## Content
 
-- **Never fetch the plans API from the browser.** It allows 5 requests per 15
-  minutes per client. Plans are fetched server-side in `lib/get-plans.ts` and
-  cached for an hour, and `page.tsx` passes that one list to every section that
-  needs it.
-- Do not call `/api/plans/detail/:id`; it returns what the list already has.
-- Validate anything from the API before rendering it (`parsePlans`).
+- Pottolite's copy comes from the Pottolite training deck. Do not add
+  capabilities, numbers or claims the deck does not support.
+- Screenshots are of the real admin panel. Blur every name, face, phone number
+  and client name that is not already public before adding one.
 
 ## Sections
 
@@ -54,7 +52,6 @@ the short list of things that go wrong when they are not followed.
 - Everything on the page is a cropped, resized WebP. Check the file signature,
   not the extension.
 - `sizes` must match the real rendered width, not a guessed `vw`.
-- Cloudinary images go through `cloudinaryLoader`, never Next's optimizer.
 - After replacing an image, clear `.next/cache/images` **and**
   `.next/dev/cache/images` — `npm run dev` keeps its own.
 - Nothing unreferenced in `public/`, and no source masters beside derivatives.

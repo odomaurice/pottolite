@@ -7,15 +7,11 @@ type Section = { id: string | null; label: string };
 
 const SECTIONS: Section[] = [
   { id: null, label: "Top" },
-  { id: "intro-video", label: "Potto in action" },
+  { id: "about", label: "What is Pottolite?" },
   { id: "features", label: "Features" },
-  { id: "problem", label: "The problem" },
-  { id: "hardware", label: "Hardware" },
-  { id: "suite", label: "Potto Suite" },
-  { id: "solutions", label: "Solutions" },
-  { id: "plans", label: "Plans" },
+  { id: "benefits", label: "Benefits" },
+  { id: "how-it-works", label: "How it works" },
   { id: "team", label: "Our team" },
-  { id: "testimonials", label: "Testimonials" },
   { id: "faq", label: "FAQ" },
 ];
 

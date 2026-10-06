@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -14,27 +13,25 @@ import {
   Location05Icon,
   Mail01Icon,
 } from "@hugeicons/core-free-icons";
+import Wordmark from "@/components/Wordmark";
 
-const LOGO = "/potto_logo.svg";
-
-const PRODUCTS = [
-  "Potto Secure",
-  "Potto Assess",
-  "Potto Pay",
-  "Potto Pocket",
-  "Potto Store",
-  "Potto Admin",
-  "Potto Comm",
+const MODULES = [
+  "Staff Management",
+  "Leave Management",
+  "Monitoring & Reporting",
+  "Visitation & Appointments",
+  "Communication Tools",
+  "Document Management",
+  "Audit Record",
 ];
 
-const COMPANY = [
+const EXPLORE = [
+  { label: "What is Pottolite?", href: "/#about" },
   { label: "Features", href: "/#features" },
-  { label: "Solutions", href: "/#solutions" },
-  { label: "Potto Suite", href: "/#suite" },
-  { label: "Plans", href: "/#plans" },
-  { label: "Hardware", href: "/#hardware" },
-  { label: "Watch demo", href: "/#intro-video" },
-  { label: "Testimonials", href: "/#testimonials" },
+  { label: "Benefits", href: "/#benefits" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Our team", href: "/#team" },
+  { label: "FAQ", href: "/#faq" },
 ];
 
 const PHONES = ["+234 808 472 4276", "+234 812 557 8825"];
@@ -78,6 +75,7 @@ export default function SiteFooter() {
 
   return (
     <footer
+      id="contact"
       data-nav-tone="dark"
       data-nav-bg="var(--color-brand-teal-dark)"
       className="relative bg-brand-teal-dark pt-20 pb-10 text-white md:pt-24"
@@ -85,24 +83,21 @@ export default function SiteFooter() {
       <div className="w-full px-5 md:px-8 lg:px-12">
         <div className="grid gap-12 sm:grid-cols-2 md:grid-cols-3 lg:gap-10 xl:grid-cols-[1.5fr_1fr_1fr_1.5fr_1fr]">
           <div className="max-w-sm">
-            <Link href="/" className="inline-flex items-center">
-              <Image
-                src={LOGO}
-                alt="Potto"
-                width={148}
-                height={55}
-                className="h-8 w-auto"
-              />
+            <Link
+              href="/"
+              aria-label="Pottolite home"
+              className="inline-flex items-center"
+            >
+              <Wordmark tone="dark" />
             </Link>
 
-            <p className="mt-5 text-[0.95rem] leading-8 text-white/70">
-              A security management solution built to keep students safe — from
-              early detection to quick response, using leading-edge
-              technologies.
+            <p className="mt-5 text-[0.95rem] leading-8 text-white/90">
+              A productivity management system for digital workforce
+              operations, by Potto Technologies Ltd.
             </p>
 
-            <p className="mt-6 text-sm text-white/70" suppressHydrationWarning>
-              © {year} Potto. All rights reserved
+            <p className="mt-6 text-sm text-white/90" suppressHydrationWarning>
+              © {year} Potto Technologies Ltd. All rights reserved
             </p>
             <a
               href="https://www.instagram.com/potto.ng"
@@ -136,16 +131,16 @@ export default function SiteFooter() {
 
           <div>
             <h2 className="font-header text-sm font-bold uppercase tracking-[0.14em]">
-              Products
+              Modules
             </h2>
             <ul className="mt-5 space-y-3">
-              {PRODUCTS.map((product) => (
-                <li key={product}>
+              {MODULES.map((module) => (
+                <li key={module}>
                   <Link
-                    href="/#suite"
-                    className="text-[0.95rem] text-white/70 transition-colors hover:text-highlight"
+                    href="/#features"
+                    className="text-[0.95rem] text-white/90 transition-colors hover:text-highlight"
                   >
-                    {product}
+                    {module}
                   </Link>
                 </li>
               ))}
@@ -154,19 +149,27 @@ export default function SiteFooter() {
 
           <div>
             <h2 className="font-header text-sm font-bold uppercase tracking-[0.14em]">
-              Company
+              Explore
             </h2>
             <ul className="mt-5 space-y-3">
-              {COMPANY.map((item) => (
+              {EXPLORE.map((item) => (
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-[0.95rem] text-white/70 transition-colors hover:text-highlight"
+                    className="text-[0.95rem] text-white/90 transition-colors hover:text-highlight"
                   >
                     {item.label}
                   </Link>
                 </li>
               ))}
+              <li>
+                <a
+                  href="https://potto.ng"
+                  className="text-[0.95rem] text-white/90 transition-colors hover:text-highlight"
+                >
+                  Potto.ng
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -174,7 +177,7 @@ export default function SiteFooter() {
             <h2 className="font-header text-sm font-bold uppercase tracking-[0.14em]">
               Contact
             </h2>
-            <ul className="mt-5 space-y-4 text-[0.95rem] text-white/70">
+            <ul className="mt-5 space-y-4 text-[0.95rem] text-white/90">
               <li className="flex items-start gap-3">
                 <HugeiconsIcon
                   icon={Location05Icon}
@@ -225,7 +228,7 @@ export default function SiteFooter() {
             <h2 className="font-header text-sm font-bold uppercase tracking-[0.14em]">
               Office Hours
             </h2>
-            <ul className="mt-5 space-y-4 text-[0.95rem] text-white/70">
+            <ul className="mt-5 space-y-4 text-[0.95rem] text-white/90">
               {OFFICE_HOURS.map((slot) => (
                 <li key={slot.days} className="flex items-start gap-3">
                   <HugeiconsIcon
@@ -244,33 +247,21 @@ export default function SiteFooter() {
               ))}
             </ul>
 
-            <Link
-              href="/register"
+            <a
+              href="mailto:support@potto.ng?subject=Pottolite"
               className="mt-7 inline-flex animate-glow items-center justify-center rounded-full bg-brand-yellow px-6 py-3 text-sm font-semibold text-ink [--glow:var(--color-brand-yellow)] transition duration-300 hover:bg-brand-yellow-light hover:[--glow:var(--color-brand-yellow-light)]"
             >
-              Get Started
-            </Link>
+              Email support
+            </a>
           </div>
         </div>
 
         <div className="mt-16 flex flex-col items-center gap-5 border-t border-white/15 pt-8 sm:flex-row sm:justify-between">
-          <p className="order-2 text-sm text-white/70 sm:order-1">
-            Built for schools across Nigeria.
+          <p className="order-2 text-sm text-white/90 sm:order-1">
+            Pottolite is a product of Potto Technologies Ltd.
           </p>
 
           <div className="order-1 flex items-center gap-6 sm:order-2">
-            <Link
-              href="/privacy"
-              className="text-sm text-white/70 transition-colors hover:text-highlight"
-            >
-              Privacy
-            </Link>
-            <Link
-              href="/terms"
-              className="text-sm text-white/70 transition-colors hover:text-highlight"
-            >
-              Terms
-            </Link>
             <a
               href="#"
               aria-label="Back to top"

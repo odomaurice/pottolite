@@ -15,153 +15,73 @@ type Group = { title: string; items: { q: string; a: string }[] };
 
 const GROUPS: Group[] = [
   {
-    title: "Before we get started",
+    title: "About Pottolite",
     items: [
       {
-        q: "We're interested in Potto. What happens after we sign up?",
-        a: "Once you sign up, our team will guide you through the onboarding process. We'll help you set up your school, prepare your records, configure the features you need, train your team, and get you ready to start using Potto.",
+        q: "What is Pottolite?",
+        a: "Pottolite is a productivity management system for digital workforce operations. It gives your organisation one centralised platform for staff records, communication and reporting, so you rely less on manual processes and get more transparency into how work is done.",
       },
       {
-        q: "What information do you need from us to get started?",
-        a: "We'll provide you with a simple list of the information we need. This may include your student, staff, parent/guardian, class, and other relevant school records, depending on the Potto solutions you choose.",
+        q: "Who makes Pottolite?",
+        a: "Pottolite is built by Potto Technologies Ltd, a software and digital solutions company focused on productivity, efficiency and collaboration. Our mission is to empower organisations with tools that simplify work.",
       },
       {
-        q: "Do we have to set everything up ourselves?",
-        a: "No. Our team will guide you through the setup and help you get your school properly configured.",
+        q: "What can Pottolite do?",
+        a: "Pottolite brings together seven modules: Staff Management, Leave Management, Digital Monitoring and Reporting, Visitation and Appointment Management, Communication Tools, Document Management, and an Audit Record of everything that happens on the platform.",
       },
       {
-        q: "How long will it take before we can start using Potto?",
-        a: "It depends on the size of your school, the solutions you're implementing, and how quickly the required information is provided. We'll work with you to agree on a suitable implementation timeline.",
-      },
-      {
-        q: "Will you train our staff?",
-        a: "Yes. We'll train the relevant members of your team so they understand how to use Potto and can confidently handle their responsibilities on the platform.",
+        q: "How does Pottolite help our organisation?",
+        a: "It streamlines day-to-day operations, improves collaboration, keeps staff files handled securely, lets you monitor your workforce in real time from the dashboard, and gives you the reports you need to make better decisions.",
       },
     ],
   },
   {
-    title: "About your subscription",
+    title: "Using Pottolite",
     items: [
       {
-        q: "How much will Potto cost our school?",
-        a: "Potto has different subscription plans designed to meet different school needs. We'll help you choose the plan that gives your school the features you need without paying for what you don't.",
+        q: "How do we add a staff member?",
+        a: "Go to Staff Management from the dashboard, add the staff member and fill in their details, such as name and designation. You can upload their ID, certificates or other documents, then save to create their digital staff profile.",
       },
       {
-        q: "What exactly am I paying for?",
-        a: "Your subscription gives you access to the features included in your chosen plan. Before you subscribe, we'll clearly explain what's included so you know exactly what you're getting.",
+        q: "Can we keep staff documents in Pottolite?",
+        a: "Yes. IDs, certificates and other documents can be uploaded to each staff profile, and the File Management module keeps your files together in one place instead of in paper folders.",
       },
       {
-        q: "Are there any extra charges I should know about?",
-        a: "We'll clearly communicate all applicable costs before you subscribe. If there are additional services or requirements outside your plan, you'll be informed beforehand.",
+        q: "How do we send messages to staff?",
+        a: "Open Communication and choose Email, WhatsApp or SMS. Select your recipients, type your message, and then send it, save it for later or cancel it. You can open any message afterwards to view its details.",
       },
       {
-        q: "What if we start with one plan and later need more features?",
-        a: "That's not a problem. As your school grows or your needs change, you can discuss upgrading your plan with our team.",
+        q: "How do staff monitoring reports work?",
+        a: "Open Staff Report from the dashboard to view and print staff monitoring summaries. You can filter the report by date and exempt specific dates so they are not counted.",
       },
       {
-        q: "Can we pay for Potto annually?",
-        a: "Yes, you can discuss the available billing options with our team and choose the arrangement that works best for your school.",
+        q: "How do we manage visitors and appointments?",
+        a: "Go to the Visitor Appointment module to schedule or approve appointments. Record each visitor's details and check them in and out, and Pottolite keeps the security and visitor logs for you.",
+      },
+      {
+        q: "Can we see who did what on the platform?",
+        a: "Yes. The Audit log, available from the admin panel, records staff actions such as logins, uploads and updates. You can filter it by date, user or activity.",
+      },
+      {
+        q: "Does Pottolite handle staff leave?",
+        a: "Yes. Leave Management is one of Pottolite's core modules, so staff leave is handled on the same platform as their profiles and reports.",
       },
     ],
   },
   {
-    title: "Getting your school ready",
+    title: "Training and support",
     items: [
       {
-        q: "Can you help us move our existing school records to Potto?",
-        a: "Yes. We'll guide you on how to prepare your existing records and help you through the process of getting them into Potto.",
-      },
-      {
-        q: "What if our school has a lot of students and staff?",
-        a: "That's exactly why we have an onboarding process. We'll work with your school to organize your information and set up Potto in a way that works for your size and structure.",
-      },
-      {
-        q: "Can we add new students or staff ourselves later?",
-        a: "Yes. Authorized school administrators can add, update, and manage relevant records as your school changes.",
-      },
-      {
-        q: "What happens when a staff member leaves the school?",
-        a: "You can update the staff member's status and manage their access to the platform so that they no longer have access to information they shouldn't.",
-      },
-      {
-        q: "Can we decide what each staff member is allowed to see?",
-        a: "Yes. Access can be managed according to staff roles and responsibilities, so users can have access to the information and features they need.",
-      },
-    ],
-  },
-  {
-    title: "For parents",
-    items: [
-      {
-        q: "Do parents need to be tech-savvy to use Potto?",
-        a: "Not at all. Potto is designed to be easy to use, and parents can be guided through the process of accessing and using the features available to them.",
-      },
-      {
-        q: "How will our parents get access to Potto?",
-        a: "Your school will provide the necessary parent/guardian information during onboarding, and our team will guide you on how to get parents connected.",
-      },
-      {
-        q: "Can both parents or guardians have access to a child's information?",
-        a: "Yes, multiple authorized parents or guardians can be linked to a student where applicable.",
-      },
-      {
-        q: "What if some of our parents don't have smartphones?",
-        a: "Let us know during onboarding. We'll discuss the available options with your school so you can determine the best way to accommodate those parents.",
-      },
-    ],
-  },
-  {
-    title: "Safety and security",
-    items: [
-      {
-        q: "How does Potto actually help keep our students safe?",
-        a: "Potto gives your school tools to better control and monitor student movement, verify parents and guardians, manage visitors, monitor attendance, and respond to emergencies.",
-      },
-      {
-        q: "Can someone just come to school and pick up a child?",
-        a: "Potto is designed to help schools control student release and verify authorized persons before a student is allowed to leave.",
-      },
-      {
-        q: "What happens if there's an emergency in our school?",
-        a: "Potto's emergency features help your school raise alerts and quickly notify the appropriate people so that action can be taken when it matters most.",
-      },
-      {
-        q: "Who can see our students' information?",
-        a: "Access is controlled based on user roles and permissions. This helps ensure that sensitive student information is only available to authorized users.",
-      },
-      {
-        q: "Is our school's data safe with Potto?",
-        a: "We take the security and privacy of school, student, parent, and staff information seriously. Potto uses access controls and security measures designed to protect your information.",
-      },
-    ],
-  },
-  {
-    title: "Support after you subscribe",
-    items: [
-      {
-        q: "What happens if we have a problem after we go live?",
-        a: "You won't be left on your own. You can reach out to our support team, and we'll help your school troubleshoot and resolve the issue.",
+        q: "Will our team be trained?",
+        a: "Pottolite training walks your team through each module: staff management, communication, monitoring and reporting, visitation and appointments, and the audit log.",
       },
       {
         q: "Who do we contact when we need help?",
-        a: "Your school will receive the appropriate support contact and guidance during onboarding.",
+        a: "Our support team is here to help. Email support@potto.ng, call one of the numbers at the bottom of this page, or use the WhatsApp button to chat with us.",
       },
       {
-        q: "What if our staff don't understand how to use a particular feature?",
-        a: "Reach out to our team. We can provide guidance and help your staff understand how to use the feature correctly.",
-      },
-      {
-        q: "What happens if our internet goes down?",
-        a: "Some Potto features require an internet connection to work. If your school's connection goes down, affected online features may be temporarily unavailable until connectivity is restored.",
-      },
-    ],
-  },
-  {
-    title: "One last question",
-    items: [
-      {
-        q: "We're ready. How do we get started?",
-        a: "Great! Simply contact the Potto team or sign up through our website. We'll help you choose the right solution, complete your onboarding, train your team, and get your school up and running.",
+        q: "We're interested. How do we get started?",
+        a: "Get in touch using the contact details at the bottom of this page and our team will take it from there.",
       },
     ],
   },
@@ -297,8 +217,8 @@ export default function FaqSection() {
           {...reveal}
           className="mx-auto mt-5 max-w-2xl text-center text-base leading-7 text-soft sm:text-lg sm:leading-8"
         >
-          Get clear answers about Potto, its features, and how our solutions
-          make school management safer, simpler, and smarter.
+          Clear answers about Pottolite, what each module does, and how to get
+          your team started.
         </motion.p>
 
         {/* Deliberately not wrapped in `reveal`: the cards fade out as they
@@ -317,7 +237,7 @@ export default function FaqSection() {
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search the questions — try &quot;cost&quot; or &quot;parents&quot;"
+              placeholder="Search the questions — try &quot;leave&quot; or &quot;audit&quot;"
               aria-label="Search frequently asked questions"
               className="w-full rounded-full bg-surface-2 py-4 pr-14 pl-14 text-sm outline-none transition duration-300 placeholder:text-soft focus:bg-white focus:ring-2 focus:ring-brand sm:text-base [&::-webkit-search-cancel-button]:hidden"
             />
@@ -384,7 +304,7 @@ export default function FaqSection() {
                 // Collapsing everything removes most of the page below here,
                 // and the FAQ sits just above the footer, so the browser has
                 // to pull the scroll up — which threw the reader into
-                // Testimonials with the headers they wanted below the fold.
+                // the section above, with the headers they wanted below the fold.
                 // Bringing the controls to the top (clear of the fixed header,
                 // via scroll-mt) keeps the collapsed sections in view.
                 //

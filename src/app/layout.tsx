@@ -15,12 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Potto | Home",
-  description: "Secured School Communities",
+  title: "Pottolite | Workforce productivity by Potto",
+  description:
+    "Pottolite is a productivity management system for digital workforce operations: staff, leave, monitoring and reporting, visitors, communication, documents and audit in one platform.",
   icons: {
-    icon: [{ url: "/Potto-logo-only_iebxw7.webp", type: "image/webp" }],
-    shortcut: "/Potto-logo-only_iebxw7.webp",
-    apple: "/Potto-logo-only_iebxw7.webp",
+    icon: [{ url: "/pottolite-mark.webp", type: "image/webp" }],
+    shortcut: "/pottolite-mark.webp",
+    apple: "/pottolite-mark.webp",
   },
 };
 

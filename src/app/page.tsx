@@ -1,38 +1,27 @@
+import AboutSection from "@/components/AboutSection";
+import BenefitsSection from "@/components/BenefitsSection";
 import FaqSection from "@/components/FaqSection";
 import FeaturesSection from "@/components/FeaturesSection";
-import HardwareSection from "@/components/HardwareSection";
 import Hero from "@/components/Hero";
 import HomeHeader from "@/components/HomeHeader";
 import HomeScrollNav from "@/components/HomeScrollNav";
-import IntroVideoSection from "@/components/IntroVideoSection";
+import HowItWorksSection from "@/components/HowItWorksSection";
 import PageBackdrop from "@/components/PageBackdrop";
-import PlansSection from "@/components/PlansSection";
-import ProblemSection from "@/components/ProblemSection";
 import SiteFooter from "@/components/SiteFooter";
-import SolutionsSection from "@/components/SolutionsSection";
-import SuiteSection from "@/components/SuiteSection";
 import TeamSection from "@/components/TeamSection";
-import TestimonialsSection from "@/components/TestimonialsSection";
-import { getPlans } from "@/lib/get-plans";
 
-export default async function Home() {
-  const plans = await getPlans();
-
+export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden font-poppins text-ink">
       <PageBackdrop />
       <HomeHeader />
       <HomeScrollNav />
       <Hero />
-      <IntroVideoSection />
+      <AboutSection />
       <FeaturesSection />
-      <ProblemSection />
-      <HardwareSection />
-      <SuiteSection plans={plans} />
-      <SolutionsSection />
-      <PlansSection plans={plans} />
+      <BenefitsSection />
+      <HowItWorksSection />
       <TeamSection />
-      <TestimonialsSection />
       <FaqSection />
       <SiteFooter />
     </main>

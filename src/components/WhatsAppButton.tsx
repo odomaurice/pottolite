@@ -3,7 +3,7 @@ import { WhatsappIcon } from "@hugeicons/core-free-icons";
 
 
 const PHONE = "2349064566528";
-const MESSAGE = "Hi Potto! I have a question about Potto for my school.";
+const MESSAGE = "Hi Potto! I have a question about Pottolite.";
 const HREF = `https://wa.me/${PHONE}?text=${encodeURIComponent(MESSAGE)}`;
 
 export default function WhatsAppButton() {

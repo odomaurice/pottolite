@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,16 +8,15 @@ import {
   Menu01Icon,
   Cancel01Icon,
   ArrowRight01Icon,
-  PlayIcon,
 } from "@hugeicons/core-free-icons";
+import Wordmark from "@/components/Wordmark";
 
 const navItems = [
+  { label: "About", href: "/#about" },
   { label: "Features", href: "/#features" },
-  { label: "Solutions", href: "/#solutions" },
-  { label: "Potto Suite", href: "/#suite" },
-  { label: "Plans", href: "/#plans" },
-  { label: "Hardware", href: "/#hardware" },
-  { label: "Testimonials", href: "/#testimonials" },
+  { label: "Benefits", href: "/#benefits" },
+  { label: "How it works", href: "/#how-it-works" },
+  { label: "Team", href: "/#team" },
   { label: "FAQ", href: "/#faq" },
 ];
 
@@ -79,15 +77,8 @@ export default function HomeHeader() {
         className="fixed inset-x-0 top-0 z-50 transition-[background-image] duration-300"
       >
         <div className="flex h-18 w-full items-center justify-between px-5 md:px-8 lg:px-12">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/potto_logo.svg"
-              alt="Potto"
-              width={148}
-              height={55}
-              priority
-              className={`h-7 w-auto transition duration-300 ${onDark ? "" : "brightness-0"}`}
-            />
+          <Link href="/" aria-label="Pottolite home" className="flex items-center">
+            <Wordmark tone={onDark ? "dark" : "light"} priority />
           </Link>
 
           {/* Desktop nav */}
@@ -110,22 +101,15 @@ export default function HomeHeader() {
           {/* Actions */}
           <div className="flex items-center gap-2">
             <Link
-              href="/register"
-              className="hidden animate-glow items-center gap-1.5 rounded-full bg-brand-teal px-5 py-3 text-sm font-semibold text-white [--glow:var(--color-brand-teal)] transition duration-300 hover:bg-brand-yellow-light hover:[--glow:var(--color-brand-yellow-light)] sm:inline-flex lg:px-8 lg:py-4 lg:text-base"
+              href="/#contact"
+              className="hidden animate-glow items-center gap-1.5 rounded-full bg-brand-yellow px-5 py-3 text-sm font-semibold text-ink [--glow:var(--color-brand-yellow)] transition duration-300 hover:bg-brand-yellow-light hover:[--glow:var(--color-brand-yellow-light)] sm:inline-flex lg:px-8 lg:py-4 lg:text-base"
             >
-              Get started
+              Talk to us
               <HugeiconsIcon
                 icon={ArrowRight01Icon}
                 size={16}
                 strokeWidth={2}
               />
-            </Link>
-            <Link
-              href="/#intro-video"
-              className="hidden animate-glow items-center justify-center gap-2 rounded-full bg-brand-yellow px-5 py-3 text-sm font-semibold text-ink [--glow:var(--color-brand-yellow)] transition duration-300 hover:bg-brand-teal hover:[--glow:var(--color-brand-teal)] sm:inline-flex lg:px-8 lg:py-4 lg:text-base"
-            >
-              <HugeiconsIcon icon={PlayIcon} size={18} strokeWidth={2} />
-              Watch demo
             </Link>
 
             {/* Hamburger — always available on mobile, logged in or out */}
@@ -173,18 +157,11 @@ export default function HomeHeader() {
               ))}
               <div className="mt-2 grid gap-2 border-t border-white/10 pt-3">
                 <Link
-                  href="/register"
+                  href="/#contact"
                   onClick={() => setOpen(false)}
-                  className="rounded-xl bg-brand-teal px-4 py-2.5 text-center text-sm font-semibold text-white transition hover:bg-brand-yellow-light"
+                  className="rounded-xl bg-brand-yellow px-4 py-2.5 text-center text-sm font-semibold text-ink transition hover:bg-brand-yellow-light"
                 >
-                  Get started
-                </Link>
-                <Link
-                  href="/#intro-video"
-                  onClick={() => setOpen(false)}
-                  className="rounded-xl bg-brand-yellow px-4 py-2.5 text-center text-sm font-semibold text-ink transition hover:bg-brand-teal"
-                >
-                  Demo Video
+                  Talk to us
                 </Link>
               </div>
             </nav>

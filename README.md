@@ -1,7 +1,13 @@
-# Potto — marketing site
+# Pottolite — marketing site
 
-The public site for [potto.ng](https://potto.ng), a Nigerian school-security
-platform: one long homepage, plus `/privacy` and `/terms`.
+The public site for **Pottolite**, Potto Technologies' productivity management
+system for digital workforce operations. It is a subdomain of
+[potto.ng](https://potto.ng): one long homepage, no other routes.
+
+The content comes from the **Pottolite Training** deck — the seven modules, the
+five benefits, the step-by-step module walkthroughs, the team and the admin-panel
+screenshots. Anything the deck does not say is a gap for the team, not a
+drafting choice (see Known gaps).
 
 > **Read [`AGENTS.md`](AGENTS.md) before writing code.** This is Next.js **16**,
 > whose APIs and conventions differ from older versions. The guides in
@@ -16,10 +22,10 @@ platform: one long homepage, plus `/privacy` and `/terms`.
 
 | Concern | Choice | Notes |
 | --- | --- | --- |
-| Framework | Next.js 16.3.1, App Router | Turbopack; the homepage prerenders static and regenerates hourly for live plan data |
+| Framework | Next.js 16.3.1, App Router | Turbopack; the homepage prerenders static |
 | UI | React 19.2 | the routes are Server Components; the homepage's sections are client components (`"use client"`) |
 | Styling | Tailwind CSS v4 | CSS-first config in [`globals.css`](src/app/globals.css) — there is **no** `tailwind.config.js` |
-| Animation | framer-motion 13 | scroll reveals, carousels, modals |
+| Animation | framer-motion 13 | scroll reveals, tabs, the FAQ accordion |
 | Icons | `@hugeicons/react` + `@hugeicons/core-free-icons` | the house icon set |
 | Fonts | Poppins (400/600/700), Geist Mono | via `next/font/google` |
 
@@ -47,13 +53,10 @@ npx tsc --noEmit # typecheck (not wired into a script)
 
 | Route | What it is |
 | --- | --- |
-| `/` | The homepage. Static, regenerated hourly for live plan data |
-| `/privacy` | Privacy Policy — an **unreviewed draft**, see Known gaps |
-| `/terms` | Terms and Conditions — an **unreviewed draft**, see Known gaps |
+| `/` | The homepage, prerendered static |
 
-The legal pages share [`LegalPage`](src/components/LegalPage.tsx), which renders
-the header and footer itself. That is why the header and footer links are
-root-relative (`/#features`): a bare `#features` goes nowhere from `/privacy`.
+There are no legal pages yet (see Known gaps). Header and footer links are still
+root-relative (`/#features`) so they keep working if routes are added later.
 
 ---
 
@@ -67,30 +70,26 @@ flowchart TB
     BD["PageBackdrop — fixed, -z-10"]:::util
     HD["HomeHeader + HomeScrollNav"]:::util
 
-    H["Hero — video masthead"]:::dark
-    IV["IntroVideoSection · #intro-video"]:::light
-    F["FeaturesSection · #features — 4-panel carousel"]:::both
-    P["ProblemSection · #problem"]:::light
-    HW["HardwareSection · #hardware"]:::dark
-    SU["SuiteSection · #suite — ancillary carousel"]:::light
-    SO["SolutionsSection · #solutions"]:::dark
-    PL["PlansSection · #plans — live from core API"]:::light
-    TM["TeamSection · #team — film poster"]:::dark
-    T["TestimonialsSection · #testimonials"]:::light
+    H["Hero — headline, dashboard screenshot, module marquee"]:::dark
+    A["AboutSection · #about — what Pottolite is, Potto's mission"]:::light
+    F["FeaturesSection · #features — the seven modules"]:::dark
+    B["BenefitsSection · #benefits — five numbered benefits"]:::light
+    W["HowItWorksSection · #how-it-works — tabbed module walkthrough"]:::light
+    TM["TeamSection · #team"]:::dark
     FQ["FaqSection · #faq — search + collapsible sections"]:::light
-    FT["SiteFooter"]:::dark
+    FT["SiteFooter · #contact"]:::dark
 
     BD -.->|"renders behind everything"| H
     HD -.->|"reads tone from each"| H
-    H --> IV --> F --> P --> HW --> SU --> SO --> PL --> TM --> T --> FQ --> FT
+    H --> A --> F --> B --> W --> TM --> FQ --> FT
 
     classDef light fill:#ffffff,stroke:#94a3b8,color:#0f172a
-    classDef dark fill:#0f766e,stroke:#0f766e,color:#ffffff
-    classDef both fill:#c7f0ea,stroke:#0f766e,color:#0f172a
+    classDef dark fill:#008c8c,stroke:#008c8c,color:#ffffff
     classDef util fill:#f1f5f9,stroke:#cbd5e1,color:#334155,stroke-dasharray:4 3
 ```
 
-Teal = dark ground. `FeaturesSection` switches tone panel by panel.
+Teal = dark ground. The header's "Talk to us" and the hero's second button go
+to `#contact`, the footer.
 
 ### The "one picture" rule
 
@@ -135,65 +134,9 @@ light default and its links vanish over a dark ground.
 >
 ```
 
-A section only needs an `id` if it is a scroll-nav target. `FeaturesSection`
-dispatches a synthetic `scroll` event when its panel changes, so the header
-re-probes without the user moving.
-
----
-
-## Plans data
-
-The plans come live from `https://core-api.potto.ng/api/plans`, fetched **on the
-server** in [`get-plans.ts`](src/lib/get-plans.ts) and cached for an hour. That
-is not an optimisation, it is a requirement: the API allows **5 requests per 15
-minutes** (`ratelimit-policy: 5;w=900`).
-
-```mermaid
-sequenceDiagram
-    participant V as Visitor
-    participant N as Next.js data cache
-    participant A as core-api.potto.ng
-
-    Note over A: 5 requests per 15 minutes
-    V->>N: GET /
-    alt fresh (under an hour old)
-        N-->>V: page with plans
-    else stale
-        N-->>V: stale page, served at once
-        N->>A: GET /api/plans, in the background
-        A-->>N: 200 is stored, 429 is discarded
-    end
-    V->>V: opens a plan
-    Note over V: the sheet reads the same list,<br/>no second request
-```
-
-- **Never fetch plans from the browser.** A visitor clicking through plans would
-  be locked out after five clicks.
-- **The detail endpoint is not used.** `/api/plans/detail/:id` returns exactly
-  the plan's entry in the list, so the sheet reads what the page already has.
-- **Next stores only 200 responses**, so a throttled background refresh keeps
-  the last good plans. `getPlans()` returns `null` only on a cold cache, and the
-  section then shows a fallback link to the app.
-- **In development a hard refresh bypasses the cache** (`cache-control: no-cache`).
-  Five of those in 15 minutes and you will see the fallback — that is the rate
-  limit, not a bug.
-- **`altUrl` on an app means "not in this plan".** Empty = included; otherwise
-  it links to the plan that includes it, which the sheet turns into an
-  "Available on …" switch.
-- **The ancillary services read the same list.** Each is matched to an API
-  app by name (ignoring "Potto" and spacing) for its real product icon
-  (`findApp`) and the plans that include it (`plansIncluding`), both in
-  `lib/plans.ts`. `page.tsx` passes the one fetched list to both sections, so
-  this costs no extra request.
-
-[`lib/plans.ts`](src/lib/plans.ts) holds the types, the parser (the response is
-validated, not trusted) and the display helpers, and is safe to import from
-client components. Plan and app icons are Cloudinary URLs served through
-[`cloudinaryLoader`](src/lib/cloudinary.ts), **not** Next's image optimizer. The
-optimizer gives each upstream fetch a hard-coded 7 seconds; opening a plan
-requests about nine icons at once over a slow link, and on a cold cache they
-timed out and rendered as broken images. Cloudinary resizes them on its own
-CDN instead, which is also why there is no `remotePatterns` config.
+A section only needs an `id` if it is a scroll-nav target or a link target.
+If a section ever changes tone without the user scrolling, dispatch a synthetic
+`scroll` event so the header re-probes.
 
 ---
 
@@ -205,9 +148,9 @@ palette) and `@theme inline` (semantic aliases). **Light theme only** —
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--brand` | `#0F766E` | primary teal; AA with white text |
-| `--color-brand-teal` | `#0D9488` | hover teal |
-| `--color-brand-teal-dark` | `#0F766E` | dark section grounds |
+| `--brand` | `#0F766E` | primary teal for text and fills on light; AA with white text |
+| `--color-brand-teal` | `#008C8C` | the deck's teal |
+| `--color-brand-teal-dark` | `#008C8C` | dark section grounds — see Known gaps on contrast |
 | `--color-brand-gold` | `#CA8A04` | CTA fills — **fills only, see below** |
 | `--color-brand-yellow-light` | `#FACC15` | accent text on teal |
 | `--ink` / `--soft` | `#000000` / `#6B7280` | body text on light |
@@ -250,39 +193,55 @@ A `prefers-reduced-motion` block disables all three.
 | Component | Role |
 | --- | --- |
 | [`SectionCaption`](src/components/SectionCaption.tsx) | The centred uppercase eyebrow **every** section opens with. Tone-aware. Use it — do not hand-roll another. |
-| [`Modal`](src/components/Modal.tsx) | Portalled dialog: backdrop, Escape, scroll lock with scrollbar compensation. `placement="bottom"` makes it a sheet that slides up and drags down by its handle. Modals stack correctly — Escape closes only the top one. Deliberately **does not scroll** — content that can outgrow the space scrolls itself, because a scroll container here clipped the card and its CTA. |
-| [`PlanDrawer`](src/components/PlanDrawer.tsx) | The plan-details sheet: price, description, customization and managed-service flags, featured apps (locked ones offer a switch to the plan that has them) and the other plans. |
-| [`VideoLightbox`](src/components/VideoLightbox.tsx) | `Modal` plus a `<video>` keyed on `src`, so switching clips remounts the element. |
-| [`PlayBadge`](src/components/PlayBadge.tsx) | The glowing play control laid over video posters (Problem, Team). Decorative; the button around the poster takes the click. |
+| [`Wordmark`](src/components/Wordmark.tsx) | The Potto hand plus "Pottolite" set in type. There is no Pottolite logo artwork, so the name is live text; `tone="dark"` inverts the mark to white. |
 | [`PageBackdrop`](src/components/PageBackdrop.tsx) / [`ContourPattern`](src/components/ContourPattern.tsx) | The single page-wide ground; contour lines are generated in JS, not an asset. |
 | [`HomeHeader`](src/components/HomeHeader.tsx) | Tone-adaptive header — see the probe mechanism above. |
 | [`HomeScrollNav`](src/components/HomeScrollNav.tsx) | Vertical dot rail, desktop only (`lg:block`), driven by a hand-maintained `SECTIONS` list. |
-| [`LegalPage`](src/components/LegalPage.tsx) | Shell for `/privacy` and `/terms`: kicker, title, revision date, contents links, numbered sections. A `confirm` block renders a deliberately loud `To confirm:` gap. |
-| [`WhatsAppButton`](src/components/WhatsAppButton.tsx) | Fixed customer-care link, bottom-right, mounted in `layout.tsx` so every route has it. A Server Component — it ships no JavaScript. `z-40` keeps it under the dialogs. |
+| [`HowItWorksSection`](src/components/HowItWorksSection.tsx) | WAI-ARIA tabs (arrow keys move between them). Each module is the deck's steps beside its screenshot; add a module by adding an entry to `MODULES`. |
+| [`WhatsAppButton`](src/components/WhatsAppButton.tsx) | Fixed customer-care link, bottom-right, mounted in `layout.tsx`. A Server Component — it ships no JavaScript. |
 
 ### Patterns worth copying
 
 - **Scroll reveal.** Every section defines a local `reveal(delay)` returning
   `initial` / `animate` / `transition`, gated on
   `useInView(ref, { once: true })`, with a shared `ease = [0.22, 1, 0.36, 1]`.
-- **Carousels are scroll-snap tracks**, not JS transforms — native swipe,
-  trackpad and keyboard scrolling come free, and the arrows are just `scrollTo`.
-  Page state is *derived from* scroll position, never the driver.
-- **Carousel controls belong beside the heading**, not under the track. Below it
-  they are a card-height down the page, and nobody scrolls to discover that
-  scrolling is possible.
+- **Tabs over carousels.** The module walkthrough is a tab row, which scrolls
+  sideways on phones rather than wrapping, with the panel directly beneath it.
+- **Odd counts are placed deliberately.** Seven features in three columns move
+  the last card to the middle column (`[&>*:last-child:nth-child(3n+1)]`), so a
+  lone card reads as intended rather than orphaned.
 - **No `setState` inside an effect body.** The `react-hooks/set-state-in-effect`
   rule is enforced as an **error**. For a hydration-time value use
-  `useSyncExternalStore` with a never-notifying subscribe (see `Modal`,
+  `useSyncExternalStore` with a never-notifying subscribe (see
   `SiteFooter`); for measurement, let `ResizeObserver` fire on `observe`.
+
+---
+
+## Checking it in a browser
+
+Most sections reveal on scroll (`useInView`), and the FAQ cards fade back out
+once scrolled past, so a plain `chrome --headless --screenshot` captures empty
+sections. Drive Chrome over the DevTools protocol instead: `npm run build`,
+`npx next start`, launch Chrome with `--remote-debugging-port`, set the viewport
+with `Emulation.setDeviceMetricsOverride`, scroll the page in steps so every
+reveal fires, then `Page.captureScreenshot` with `captureBeyondViewport`. Check
+at 1440 px and 390 px, and compare `scrollWidth` with `innerWidth` for horizontal
+overflow. Node 20 needs `--experimental-websocket` for the CDP socket.
+
+Stop `next start` before rebuilding; it holds `.next` open.
 
 ---
 
 ## Assets
 
-`public/` holds **24 files, 19 MB — every one referenced by exact path.** It was
-98 MB before a sweep of unreferenced sources; keep it that way, because nothing
-prunes it automatically and everything in it ships.
+`public/` holds **10 files, about 200 KB — every one referenced by exact path.**
+Keep it that way: nothing prunes it automatically and everything in it ships.
+
+- `screens/` — admin-panel screenshots from the training deck, with third-party
+  personal data and the client's name blurred
+- `team/` — 480 px square portraits from the deck
+- `pottolite-mark.webp` — the hand mark cropped to its alpha bounding box; also
+  the favicon
 
 Source art arrives large (5–12 MB PNG/JPG, occasionally with the wrong
 extension). Everything on the page is a cropped, resized WebP:
@@ -323,25 +282,20 @@ Rules that came out of doing this the hard way:
 
 ---
 
-
-
 ## Known gaps
 
-Tracked here rather than in code comments so they stay visible.
+Tracked here rather than in code comments so they stay visible. Each is a
+decision for the team.
 
 | Gap | Detail |
 | --- | --- |
-| Dead links | `/register` (the header's "Get started", on desktop and in the mobile menu, and once in the footer) and `/services/potto-*` (6 Learn More links) — those routes do not exist, and `/register` logs a 404 in the console on every page load because production `<Link>`s prefetch. Plan sign-ups already go to the real app at `core.potto.ng/app/plan-detail/{id}` |
-| Legal pages | `/privacy` and `/terms` exist and are linked from the footer. The text is a **draft no lawyer has reviewed**; the "draft for review" banner is written but commented out in [`LegalPage.tsx`](src/components/LegalPage.tsx) |
-| Legal facts still unknown | The on-page `To confirm:` markers have been removed from Privacy, so the open questions are recorded here instead. **Privacy:** the registered entity name and RC number; how parental consent is evidenced; what the devices store for face recognition (template or image, on the device or on the server) and for how long; the named sub-processors and hosting region; retention periods per record type; whether records are encrypted at rest; the DPO's name; and whether any aggregated school data is used for analytics. **Terms:** the billing period behind each published plan price, payment and refund terms, device ownership and warranty, Free-plan limits, any uptime commitment, notice periods, the liability cap, and the dispute forum. Every one of these is a commercial or engineering decision, not a drafting choice |
-| Empty hero | `Hero.tsx`'s `<h1>` renders nothing while `MESSAGES` and the rotate interval are still live |
-| Scroll-nav order | Fixed, but fragile by design: `HomeScrollNav`'s `SECTIONS` list is hand-maintained and **must stay in `page.tsx` order**. The active dot is the last entry whose top is above the probe, walked in list order, so one entry out of sequence highlights the wrong dot. It had already drifted once |
-| Placeholder content | Testimonial quotes, names and `avatars/avatar1–4.jpg` are stand-ins |
-| Copy needing sign-off | Ancillary service URLs are provisional |
-| Plan data | Prices carry no billing period in the API (per student? per term?), so none is shown. Suite's `pageTitle` and Enterprise's `desc` are the same sentence, so their cards share a tagline |
-| Plan video | The API has no video field; every plan's Play video shows `intro.mp4` |
-| Potto Comm | The one ancillary service with no counterpart among the API's apps, so it is the only card with no plan availability and no product icon — it keeps a stand-in hugeicon |
-| WhatsApp number | The floating chat button opens `wa.me/2349064566528` (0906 456 6528). Confirm it is the line customer care actually watches, and remember wa.me needs the international form with no leading zero |
-| Team placeholders | `public/team/placeholder-team.webp` is a transparent composite of the Benefits cut-outs, so the section's teal is its background; the film is `intro.mp4`; the blurb is placeholder copy. Swap the image, then clear `.next/cache/images` — and `.next/dev/cache/images`, which `npm run dev` keeps separately |
-| FAQ search | Plain substring matching, no stemming — "setup" does not find "set **up**", which is how most of the answers phrase it |
-| Not built | Pricing detail, Contact, How-it-works |
+| No privacy policy or terms | Potto's `/privacy` and `/terms` were written for the school platform and were removed rather than reused. Pottolite processes staff records, documents, messages and visitor logs, so it needs its own notice before launch |
+| Pricing | No pricing or plan information exists for Pottolite, so the site has none and the FAQ does not answer "how much does it cost?" |
+| Screenshot consent | The screenshots are from a live deployment. Other people's names, faces and phone numbers and the client's name are blurred; Otis Chiemezie's own entry is left visible, as in the deck. Confirm the client is happy for its dashboard (staff counts, LGA chart) to appear publicly |
+| Team photos and names | Taken from the deck. Confirm the support team are happy to be pictured, and the order of their names |
+| Contacts | The footer keeps Potto's address, phone lines, emails and office hours. The deck's `08064315051` is a personal line and is not on the site. The deck's `support.potto.ng` returned 503, so support points to `support@potto.ng`. The WhatsApp button still opens Potto's customer-care line, `wa.me/2349064566528` — confirm it handles Pottolite |
+| Sign-up | There is no Pottolite sign-up or app URL, so every CTA goes to the contact details |
+| Leave and document modules | The deck names them but has no walkthrough or screenshot, so they are described in one line each and have no tab in How it works |
+| Teal contrast | `--color-brand-teal-dark` is `#008C8C` (the deck's teal), not the `#0F766E` the contrast table above was measured on. White on `#008C8C` is about 4.1:1 — below AA for body text. Darkening it would fix this at the cost of matching the deck |
+| Scroll-nav order | `HomeScrollNav`'s `SECTIONS` list is hand-maintained and **must stay in `page.tsx` order** |
+| FAQ search | Plain substring matching, no stemming |
